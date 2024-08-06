@@ -8,7 +8,8 @@ const DisplayAlbum = ({album}) => {
 
     const {id} = useParams();
     const [albumData,setAlbumData] = useState("");
-    const {playWithId, albumsData, songsData} = useContext(PlayerContext);
+    const [isHovered,setIsHovered] = useState(false);
+    const {playWithId, albumsData, songsData,track,playStatus,play,pause} = useContext(PlayerContext);
 
     useEffect(()=>{
         albumsData.map((item)=>{
@@ -36,7 +37,7 @@ const DisplayAlbum = ({album}) => {
             </p>
         </div>
       </div>
-      <div className='grid grid-cols-3 sm:grid-cols-4 mt-10 mb-4 pl-2 text-[#a7a7a7]'>
+      <div className='sm:grid hidden grid-cols-[1.5fr_1fr_1fr_1fr] mt-10 mb-4 pl-2 text-[#a7a7a7]'>
         <p><b className='mr-4'>#</b>Title</p>
         <p>Album</p>
         <p className='hidden sm:block'>Date Added</p>
@@ -45,11 +46,11 @@ const DisplayAlbum = ({album}) => {
       <hr />
       {
         songsData.filter((item) => item.album === album.name ).map((item,index)=>(
-            <div onClick={()=>playWithId(item._id)} key={index} className='grid grid-cols-3 sm:grid-cols-4 gap-2 p-2 items-center text-[#a7a7a7] hover:bg-[#ffffff2b] cursor-pointer'>
-                <p className='text-white'>
-                    <b className='mr-4 text-[#a7a7a7]'>{index+1}</b>
+            <div onClick={()=>playWithId(item._id)} key={index} className='sm:grid hidden grid-cols-[1.5fr_1fr_1fr_1fr] gap-2 p-2 items-center text-[#a7a7a7] hover:bg-[#ffffff2b] cursor-pointer'>
+                <p className={item.name === track.name?"text-green-400":'text-white'}>
+                    <b onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} className='mr-4 text-[#a7a7a7]'>{item.name === track.name ? <img onClick={(e)=>{e.stopPropagation();playStatus ? pause() : play();}} src={playStatus?assets.pause2_icon:assets.play2_icon} className={isHovered?'w-6 h-6 inline':'w-5 h-5 inline'} alt="" /> : index+1}</b>
                     <img className='inline w-10 mr-5' src={item.image} alt="" />
-                    {item.name.slice(0,34)+"..."}
+                    {item.name}
                 </p>
                 <p className='text-[15px]'>{albumData.name}</p>
                 <p className='text-[15px] hidden sm:block'>5 days ago</p>

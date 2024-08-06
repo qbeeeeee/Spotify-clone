@@ -11,6 +11,7 @@ const PlayerContextProvider = (props) => {
 
     const url = 'http://localhost:4000';
 
+    const [isfinished,setIsFinished] = useState(false);
     const [songsData,setSongsData] = useState([]);
     const [albumsData,setAlbumsData] = useState([]);
     const [track,setTrack] = useState(songsData[0]);
@@ -29,6 +30,7 @@ const PlayerContextProvider = (props) => {
     const play = () => {
         audioRef.current.play();
         setPlayStatus(true);
+        setIsFinished(false);
     }
 
     const pause = () => {
@@ -67,6 +69,7 @@ const PlayerContextProvider = (props) => {
                 await setTrack(songsData[index+1]);
                 await audioRef.current.play();
                 setPlayStatus(true);
+                setIsFinished(false);
             }
         })
     }
@@ -91,7 +94,8 @@ const PlayerContextProvider = (props) => {
             
         }
     }
-     
+
+ 
     useEffect(()=>{
         setTimeout(()=>{
             audioRef.current.ontimeupdate = () => {
@@ -106,6 +110,9 @@ const PlayerContextProvider = (props) => {
                         minute: Math.floor(audioRef.current.duration/60)
                     }
                 })
+                if((audioRef.current.currentTime/audioRef.current.duration*100)===100){
+                    setIsFinished(true);
+                }
             }
         }, 1000);
     },[audioRef])
@@ -126,7 +133,8 @@ const PlayerContextProvider = (props) => {
         playWithId,
         previous,next,
         seekSong,
-        songsData,albumsData
+        songsData,albumsData,
+        isfinished
     }
 
     return (
