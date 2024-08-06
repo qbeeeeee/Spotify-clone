@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Player = () => {
 
-    const {seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData} = useContext(PlayerContext);
+    const {seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
     const [isHovered,setIsHovered] = useState(false);
     const [isHovered2,setIsHovered2] = useState(false);
     const [progress,setProgress] = useState(50);
@@ -55,6 +55,14 @@ const Player = () => {
         }
     }
 
+    const handleLyrics = () => {
+        if(isLyrics){
+            setIsLyrics(false);
+        }else{
+            setIsLyrics(true);
+        } 
+    }
+    
     useEffect(() => {
         if(isfinished && isLooped){
             play();
@@ -63,9 +71,7 @@ const Player = () => {
             next();
         }
     }, [isfinished]);
-    console.log(foundAlbum);
-    
-      
+       
   return track ? (
     <div className='h-[10%] bg-black flex justify-between items-center text-white px-4'>
         <div className='hidden lg:flex items-center gap-4'>
@@ -96,7 +102,7 @@ const Player = () => {
         </div>
         <div className='hidden lg:flex items-center gap-3 opacity-75'>
             <img onClick={handleWhoPlays} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={whoPlays?assets.plays2_icon:assets.plays_icon} alt="" />
-            <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.mic_icon} alt="" />
+            <img onClick={handleLyrics} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={isLyrics?assets.mic2_icon:assets.mic_icon} alt="" />
             <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.queue_icon} alt="" />
             <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.speaker_icon} alt="" />
             <img onClick={handleVolumeIcon} onMouseEnter={()=>setIsHovered2(true)} onMouseLeave={()=>setIsHovered2(false)} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={progress>0 ? assets.volume_icon : assets.musicmute_icon} alt="" />

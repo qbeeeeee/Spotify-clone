@@ -5,9 +5,7 @@ import { PlayerContext } from '../context/PlayerContext';
 
 const WhoPlays = () => {
 
-    const {albumsData,track,setWhoPlays,whoPlays} = useContext(PlayerContext);
-    
-    const foundAlbum = albumsData.find(albumsData => albumsData.name === track.album);
+    const {setWhoPlays,whoPlays,foundAlbum} = useContext(PlayerContext);
     
     const handleWhoPlays = () => {
         if(whoPlays){

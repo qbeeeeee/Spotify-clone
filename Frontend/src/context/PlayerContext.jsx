@@ -11,6 +11,8 @@ const PlayerContextProvider = (props) => {
 
     const url = 'http://localhost:4000';
 
+    const [lyrics,setLyrics] = useState('');
+    const [isLyrics,setIsLyrics] = useState(false);
     const [whoPlays,setWhoPlays] = useState(false);
     const [isfinished,setIsFinished] = useState(false);
     const [songsData,setSongsData] = useState([]);
@@ -27,6 +29,7 @@ const PlayerContextProvider = (props) => {
             minute:0
         }
     })
+    const foundAlbum = track ? albumsData.find(albumsData => albumsData.name === track.album) : null;
 
     const play = () => {
         audioRef.current.play();
@@ -43,6 +46,7 @@ const PlayerContextProvider = (props) => {
         await songsData.map((item)=>{
             if(id === item._id){
                 setTrack(item);
+                setLyrics("No Lyrics Found");
             }
         })
         
@@ -54,6 +58,7 @@ const PlayerContextProvider = (props) => {
         songsData.map(async (item,index)=>{
             if(track._id === item._id && index > 0){
                 await setTrack(songsData[index-1]);
+                setLyrics("No Lyrics Found");
                 await audioRef.current.play();
                 setPlayStatus(true);
             }
@@ -68,6 +73,7 @@ const PlayerContextProvider = (props) => {
         songsData.map(async (item,index)=>{
             if(track._id === item._id && index < songsData.length){
                 await setTrack(songsData[index+1]);
+                setLyrics("No Lyrics Found");
                 await audioRef.current.play();
                 setPlayStatus(true);
                 setIsFinished(false);
@@ -80,6 +86,7 @@ const PlayerContextProvider = (props) => {
             const response = await axios.get(`${url}/api/song/list`);
             setSongsData(response.data.songs);
             setTrack(response.data.songs[0]);
+            setLyrics("No Lyrics Found");
 
         } catch (error) {
             
@@ -136,7 +143,10 @@ const PlayerContextProvider = (props) => {
         seekSong,
         songsData,albumsData,
         isfinished,
-        setWhoPlays,whoPlays
+        setWhoPlays,whoPlays,
+        isLyrics,setIsLyrics,
+        lyrics,setLyrics,
+        foundAlbum
     }
 
     return (
