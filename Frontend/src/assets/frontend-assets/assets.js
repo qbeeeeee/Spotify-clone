@@ -27,6 +27,9 @@ import pause2_icon from './pause2_icon.png'
 import musicmute_icon from './musicmute_icon.png'
 import lowvolume_icon from './lowvolume_icon.png'
 import loop2_icon from './loop2_icon.png'
+import menu_icon from './menu_icon.png'
+import cross_icon from './cross_icon.png'
+import plays2_icon from './plays2_icon.png'
  
 export const assets = {
     bell_icon,
@@ -57,5 +60,7 @@ export const assets = {
     pause2_icon,
     musicmute_icon,
     lowvolume_icon,
-    loop2_icon
+    loop2_icon,
+    menu_icon,cross_icon,
+    plays2_icon
 }

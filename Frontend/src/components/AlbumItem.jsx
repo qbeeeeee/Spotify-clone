@@ -11,7 +11,7 @@ const AlbumItem = ({image,name,desc,id}) => {
   return (
     <div onClick={()=>navigate(`/album/${id}`)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} className='relative min-w-[180px] p-2 px-3 rounded cursor-pointer hover:bg-[#ffffff26]'>
         <img className='rounded w-40 h-40' src={image} alt="" />
-        <img style={{ bottom: '120px' }} onMouseEnter={() => setIsHovered2(true)} onMouseLeave={() => setIsHovered2(false)} className={isHovered ? isHovered2 ? "filter brightness-110 saturate-150 hue-rotate-15 rounded color-green rounded absolute right-9 transition-opacity h-[13%] w-[22%] " : "color-green rounded absolute right-9 transition-opacity h-[12%] w-[20%] " : "h-[12%] w-[20%] absolute right-9 transition-opacity duration-200 opacity-0"}
+        <img style={{ bottom: '120px' }} onMouseEnter={() => setIsHovered2(true)} onMouseLeave={() => setIsHovered2(false)} className={isHovered ? isHovered2 ? "filter brightness-110 saturate-150 hue-rotate-15 rounded color-green rounded absolute right-9 transition-opacity h-[14%] w-[22%] " : "color-green rounded absolute right-9 transition-opacity h-[13%] w-[20%] " : "h-[13%] w-[20%] absolute right-9 transition-opacity duration-200 opacity-0"}
           src={assets.play2_icon}
           alt=""
         />

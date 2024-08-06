@@ -1,14 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react'
 import {assets} from '../assets/frontend-assets/assets'
 import { PlayerContext } from '../context/PlayerContext'
+import { useNavigate } from 'react-router-dom';
 
 const Player = () => {
 
-    const {seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished} = useContext(PlayerContext);
+    const {seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData} = useContext(PlayerContext);
     const [isHovered,setIsHovered] = useState(false);
     const [isHovered2,setIsHovered2] = useState(false);
     const [progress,setProgress] = useState(50);
     const [isLooped,setIsLooped] = useState(false);
+    const navigate = useNavigate();
+
+    const foundAlbum = albumsData.find(albumsData => albumsData.name === track.album);
 
     const handleVolumeChange = (e) => {
         const newVolume = e.target.value;
@@ -43,6 +47,13 @@ const Player = () => {
         }
     }
 
+    const handleWhoPlays = () => {
+        if(whoPlays){
+            setWhoPlays(false);
+        }else{
+            setWhoPlays(true);
+        }
+    }
 
     useEffect(() => {
         if(isfinished && isLooped){
@@ -52,13 +63,15 @@ const Player = () => {
             next();
         }
     }, [isfinished]);
+    console.log(foundAlbum);
+    
       
   return track ? (
     <div className='h-[10%] bg-black flex justify-between items-center text-white px-4'>
         <div className='hidden lg:flex items-center gap-4'>
             <img className='w-12' src={track.image} alt="" />
             <div>
-                <p>{track.name}</p>
+                <p onClick={()=>navigate(`/album/${foundAlbum._id}`)} className='hover:underline hover:underline-offest-1 cursor-pointer'>{track.name.toUpperCase()}</p>
                 <p>{track.desc.slice(0,30)+"..."}</p>
             </div>
         </div>
@@ -82,7 +95,7 @@ const Player = () => {
             </div>
         </div>
         <div className='hidden lg:flex items-center gap-3 opacity-75'>
-            <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.plays_icon} alt="" />
+            <img onClick={handleWhoPlays} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={whoPlays?assets.plays2_icon:assets.plays_icon} alt="" />
             <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.mic_icon} alt="" />
             <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.queue_icon} alt="" />
             <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.speaker_icon} alt="" />

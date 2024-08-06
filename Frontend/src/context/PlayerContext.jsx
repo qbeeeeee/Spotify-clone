@@ -11,6 +11,7 @@ const PlayerContextProvider = (props) => {
 
     const url = 'http://localhost:4000';
 
+    const [whoPlays,setWhoPlays] = useState(false);
     const [isfinished,setIsFinished] = useState(false);
     const [songsData,setSongsData] = useState([]);
     const [albumsData,setAlbumsData] = useState([]);
@@ -134,7 +135,8 @@ const PlayerContextProvider = (props) => {
         previous,next,
         seekSong,
         songsData,albumsData,
-        isfinished
+        isfinished,
+        setWhoPlays,whoPlays
     }
 
     return (
