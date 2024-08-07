@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Player = () => {
 
-    const {seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
+    const {isHome,previous2,next2,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
     const [isHovered,setIsHovered] = useState(false);
     const [isHovered2,setIsHovered2] = useState(false);
     const [progress,setProgress] = useState(50);
@@ -82,15 +82,45 @@ const Player = () => {
             </div>
         </div>
         <div className='flex flex-col items-center gap-1 m-auto'>
-            <div className='flex gap-4'>
-                <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.shuffle_icon} alt="" />
-                <img onClick={previous} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.prev_icon} alt="" />
+            <div className='flex gap-6'>
+                <div className="relative group">
+                    <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                        Shuffle
+                    </div>
+                    <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.shuffle_icon} alt="" />
+                </div>
+                <div className="relative group">
+                    <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                        Previous
+                    </div>
+                    <img onClick={isHome?previous2:previous} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.prev_icon} alt="" />
+                </div>
                 {playStatus
-                ?<img onClick={pause} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.pause_icon} alt="" />
-                :<img onClick={play} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.play_icon} alt="" />
+                ? <div className="relative group">
+                    <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                        Pause
+                    </div>
+                    <img onClick={pause} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.pause_icon} alt="" />
+                </div>
+                : <div className="relative group">
+                    <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                        Play
+                    </div>
+                    <img onClick={play} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.play_icon} alt="" />
+                </div>
                 }
-                <img onClick={next} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.next_icon} alt="" />
-                <img onClick={handleLoop} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={isLooped?assets.loop2_icon:assets.loop_icon} alt="" />
+                <div className="relative group">
+                    <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                        Next
+                    </div>
+                    <img onClick={isHome?next2:next} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.next_icon} alt="" />
+                </div>
+                <div className="relative group">
+                    <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                        Loop
+                    </div>
+                    <img onClick={handleLoop} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={isLooped?assets.loop2_icon:assets.loop_icon} alt="" />
+                </div>
             </div>
             <div className='flex items-center gap-5'>
                 <p>{formatTime(time.currentTime.minute, time.currentTime.second)}</p>
@@ -101,11 +131,36 @@ const Player = () => {
             </div>
         </div>
         <div className='hidden lg:flex items-center gap-3 opacity-75'>
-            <img onClick={handleWhoPlays} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={whoPlays?assets.plays2_icon:assets.plays_icon} alt="" />
-            <img onClick={handleLyrics} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={isLyrics?assets.mic2_icon:assets.mic_icon} alt="" />
-            <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.queue_icon} alt="" />
-            <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.speaker_icon} alt="" />
-            <img onClick={handleVolumeIcon} onMouseEnter={()=>setIsHovered2(true)} onMouseLeave={()=>setIsHovered2(false)} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={progress>0 ? assets.volume_icon : assets.musicmute_icon} alt="" />
+            <div className="relative group">
+                <div className="absolute bottom-3 transform -translate-x-1/2 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                    Now Playing View
+                </div>
+                <img onClick={handleWhoPlays} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={whoPlays?assets.plays2_icon:assets.plays_icon} alt="" />
+            </div>
+            <div className="relative group">
+                <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                    Lyrics
+                </div>
+                <img onClick={handleLyrics} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={isLyrics?assets.mic2_icon:assets.mic_icon} alt="" />
+            </div>
+            <div className="relative group">
+                <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                    Queue
+                </div>
+                <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.queue_icon} alt="" />
+            </div> 
+            <div className="relative group">
+                <div className="absolute bottom-3 transform -translate-x-1/2 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                    Connect to a Device
+                </div>
+                <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.speaker_icon} alt="" />
+            </div>
+            <div className="relative group">
+                <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                    Mute
+                </div>
+                <img onClick={handleVolumeIcon} onMouseEnter={()=>setIsHovered2(true)} onMouseLeave={()=>setIsHovered2(false)} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={progress>0 ? assets.volume_icon : assets.musicmute_icon} alt="" />
+            </div>
             <div className="relative flex flex-col w-20 mt-5 ">
                 <div className="flex w-full h-1.5 rounded-[10px] bg-gray-500 mb-5">
                     <div className={isHovered2? "h-full rounded-[10px] bg-green-400 ease-out" : "h-full rounded-[10px] bg-white ease-out"}  style={{ width: `${progress}%` }}>
@@ -130,8 +185,18 @@ const Player = () => {
                     className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer "
                 />
             </div>
-            <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.mini_player_icon} alt="" />
-            <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.zoom_icon} alt="" />
+            <div className="relative group">
+                <div className="absolute bottom-3 transform -translate-x-20 -translate-y-5 w-32 bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100 z-10 whitespace-no-wrap max-w-xs">
+                    Open Miniplayer
+                </div>
+                <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.mini_player_icon} alt="" />
+            </div>
+            <div className="relative group">
+                <div className="right-1 absolute bottom-3 transform translate-x-1/4 -translate-y-5 w-20 bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100 z-10 whitespace-no-wrap max-w-xs">
+                    FullScreen
+                </div>
+                <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.zoom_icon} alt="" />
+            </div>
         </div>
     </div>
   ) : null

@@ -7,9 +7,8 @@ import { PlayerContext } from '../context/PlayerContext';
 const DisplayAlbum = ({album}) => {
 
     const {id} = useParams();
-    const [albumData,setAlbumData] = useState("");
     const [isHovered,setIsHovered] = useState(false);
-    const {playWithId, albumsData, songsData,track,playStatus,play,pause} = useContext(PlayerContext);
+    const {playWithId, albumsData, songsData,track,playStatus,play,pause,albumData,setAlbumData} = useContext(PlayerContext);
 
     useEffect(()=>{
         albumsData.map((item)=>{
@@ -39,7 +38,7 @@ const DisplayAlbum = ({album}) => {
       </div>
       <div className='flex gap-8'> 
         <img className="filter hover:brightness-125 hover:scale-105 hover:saturate-150 hoverhue-rotate-15 rounded color-green rounded w-14 pt-10 "
-        src={assets.play2_icon} alt="" />
+        src={assets.play2_icon} onClick={()=>{playWithId(songsData.find(x => x.album === albumData.name)._id)}} alt="" />
         <img className="filter opacity-80 hover:opacity-100 hover:brightness-110 hover:scale-105 hover:saturate-150 hover:hue-rotate-15 rounded color-green rounded w-10 h-[100%] pt-12 "
         src={assets.like_icon} alt="" />
         <img className="filter opacity-80 hover:opacity-100 hover:brightness-125 hover:scale-105 hover:saturate-150 hoverhue-rotate-15 rounded color-green rounded w-8 h-[100%] pt-12  "

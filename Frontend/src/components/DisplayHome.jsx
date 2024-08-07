@@ -15,8 +15,7 @@ const shuffleArray = (array) => {
 
 const DisplayHome = () => {
 
-  const {songsData,albumsData} = useContext(PlayerContext);
-  const [shuffledSongsData, setShuffledSongsData] = useState([]);
+  const {songsData,albumsData,shuffledSongsData, setShuffledSongsData} = useContext(PlayerContext);
 
   useEffect(() => {
     setShuffledSongsData(shuffleArray(songsData));

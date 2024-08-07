@@ -11,6 +11,10 @@ const PlayerContextProvider = (props) => {
 
     const url = 'http://localhost:4000';
 
+    const [isHome,setIsHome] = useState(location.pathname === "/");
+    const [albumData,setAlbumData] = useState("");
+    const [albumSongs, setAlbumSongs] = useState([]);
+    const [shuffledSongsData, setShuffledSongsData] = useState([]);
     const [lyrics,setLyrics] = useState('');
     const [isLyrics,setIsLyrics] = useState(false);
     const [whoPlays,setWhoPlays] = useState(false);
@@ -30,6 +34,7 @@ const PlayerContextProvider = (props) => {
         }
     })
     const foundAlbum = track ? albumsData.find(albumsData => albumsData.name === track.album) : null;
+    
 
     const play = () => {
         audioRef.current.play();
@@ -54,10 +59,21 @@ const PlayerContextProvider = (props) => {
         setPlayStatus(true);
     }
 
-    const previous = async () => {
-        songsData.map(async (item,index)=>{
+    const previous = async () => {        
+        albumSongs.map(async (item,index)=>{
             if(track._id === item._id && index > 0){
-                await setTrack(songsData[index-1]);
+                await setTrack(albumSongs[index-1]);
+                setLyrics("No Lyrics Found");
+                await audioRef.current.play();
+                setPlayStatus(true);
+            }
+        })
+    }
+
+    const previous2 = async () => {
+        shuffledSongsData.map(async (item,index)=>{
+            if(track._id === item._id && index > 0){
+                await setTrack(shuffledSongsData[index-1]);
                 setLyrics("No Lyrics Found");
                 await audioRef.current.play();
                 setPlayStatus(true);
@@ -69,10 +85,31 @@ const PlayerContextProvider = (props) => {
         audioRef.current.currentTime = ((e.nativeEvent.offsetX / seekBg.current.offsetWidth)*audioRef.current.duration);
     }
 
+    useEffect(()=>{
+        setAlbumSongs([]);
+        songsData.map((item)=>{   
+          if(item.album === albumData.name){
+            setAlbumSongs(prevSongs => [...prevSongs,item]);
+          }
+        })
+    },[songsData,albumData])
+
     const next = async () => {
-        songsData.map(async (item,index)=>{
-            if(track._id === item._id && index < songsData.length){
-                await setTrack(songsData[index+1]);
+        albumSongs.map(async (item,index)=>{        
+            if(track._id === item._id && index < albumSongs.length-1){
+                await setTrack(albumSongs[index+1]);
+                setLyrics("No Lyrics Found");
+                await audioRef.current.play();
+                setPlayStatus(true);
+                setIsFinished(false);
+            }
+        })
+    }
+
+    const next2 = async () => {
+        shuffledSongsData.map(async (item,index)=>{
+            if(track._id === item._id && index < shuffledSongsData.length-1){
+                await setTrack(shuffledSongsData[index+1]);
                 setLyrics("No Lyrics Found");
                 await audioRef.current.play();
                 setPlayStatus(true);
@@ -130,6 +167,10 @@ const PlayerContextProvider = (props) => {
         getAlbumsData();
     },[])
 
+    useEffect(()=>{
+        setIsHome(location.pathname === "/");
+    },[location.pathname])
+
     const contextValue = {
         audioRef,
         seekBg,
@@ -139,14 +180,16 @@ const PlayerContextProvider = (props) => {
         time,setTime,
         play,pause,
         playWithId,
-        previous,next,
-        seekSong,
+        previous,next,next2,
+        seekSong,previous2,
         songsData,albumsData,
         isfinished,
         setWhoPlays,whoPlays,
         isLyrics,setIsLyrics,
         lyrics,setLyrics,
-        foundAlbum
+        foundAlbum,
+        shuffledSongsData,setShuffledSongsData,isHome,setIsHome,
+        albumData,setAlbumData
     }
 
     return (

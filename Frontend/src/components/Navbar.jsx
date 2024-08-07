@@ -9,9 +9,19 @@ const Navbar = () => {
   return (
     <>
         <div className='w-full flex justify-between items-center font-semibold'>
-            <div className='flex items-center gap-2'>   
-                <img onClick={()=>navigate(-1)} className='w-8 bg-black p-2 rounded-2xl cursor-pointer' src={assets.arrow_left} alt="" />
-                <img onClick={()=>navigate(1)} className='w-8 bg-black p-2 rounded-2xl cursor-pointer' src={assets.arrow_right} alt="" />
+            <div className='flex items-center gap-2'>  
+                <div className="relative group">
+                    <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-3 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                        Go back
+                    </div>
+                    <img onClick={()=>navigate(-1)} className='w-8 bg-black p-2 rounded-2xl cursor-pointer' src={assets.arrow_left} alt="" />
+                </div> 
+                <div className="relative group">
+                    <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-3 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
+                        Go forward
+                    </div>
+                    <img onClick={()=>navigate(1)} className='w-8 bg-black p-2 rounded-2xl cursor-pointer' src={assets.arrow_right} alt="" />
+                </div>
             </div>
             <div className='flex items-center gap-4'>
                 <p className='py-1 px-3 text-[16px] cursor-pointer opacity-70 hover:opacity-100 hover:scale-105'>Sign Up</p>
