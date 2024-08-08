@@ -11,6 +11,7 @@ const AddAlbum = () => {
   const [name,setName] = useState("");
   const [desc,setDesc] = useState("");
   const [loading,setLoading] = useState(false);
+  const [artist,setArtist] = useState("");
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -23,6 +24,7 @@ const AddAlbum = () => {
       formData.append('desc',desc);
       formData.append('image',image);
       formData.append('bgColour',colour);
+      formData.append('artist',artist);
 
       const response = await axios.post(`${url}/api/album/add`,formData);
 
@@ -32,6 +34,7 @@ const AddAlbum = () => {
           setDesc("");
           setImage(false);
           setColour('#121212');
+          setArtist("");
       }
       else{
            toast.error("Something went wrong");
@@ -61,17 +64,22 @@ const AddAlbum = () => {
 
       <div className='flex flex-col gap-2.5'>
         <p>Album Name</p>
-        <input onChange={(e)=>setName(e.target.value)} value={name} className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' type="text" placeholder="Type here"/>
+        <input onChange={(e)=>setName(e.target.value)} value={name} className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' type="text" placeholder="Type here" required/>
       </div>
 
       <div className='flex flex-col gap-2.5'>
         <p>Album Description</p>
-        <input onChange={(e)=>setDesc(e.target.value)} value={desc} className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' type="text" placeholder="Type here"/>
+        <input onChange={(e)=>setDesc(e.target.value)} value={desc} className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' type="text" placeholder="Type here" required/>
       </div>
 
       <div className='flex flex-col gap-3'>
         <p>Background Colour</p>
-        <input onChange={(e)=>setColour(e.target.value)} value={colour} type="color" />
+        <input onChange={(e)=>setColour(e.target.value)} value={colour} type="color"/>
+      </div>
+
+      <div className='flex flex-col gap-2.5'>
+        <p>Album Name</p>
+        <input onChange={(e)=>setArtist(e.target.value)} value={artist} className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' type="text" placeholder="Type here" required/>
       </div>
 
       <button className="bg-gradient-to-r from-gray-700 to-gray-900 text-white 

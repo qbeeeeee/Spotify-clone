@@ -10,6 +10,7 @@ const PlayerContextProvider = (props) => {
     const seekBar = useRef();
 
     const url = 'http://localhost:4000';
+    const apiURL = 'https://api.lyrics.ovh';
 
     const [isHome,setIsHome] = useState(location.pathname === "/");
     const [albumData,setAlbumData] = useState("");
@@ -23,6 +24,7 @@ const PlayerContextProvider = (props) => {
     const [albumsData,setAlbumsData] = useState([]);
     const [track,setTrack] = useState(songsData[0]);
     const [playStatus,setPlayStatus] = useState(false);
+    const [foundAlbum,setFoundAlbum] = useState(albumsData[0]);
     const [time,setTime] = useState({
         currentTime:{
             second:0,
@@ -33,8 +35,6 @@ const PlayerContextProvider = (props) => {
             minute:0
         }
     })
-    const foundAlbum = track ? albumsData.find(albumsData => albumsData.name === track.album) : null;
-    
 
     const play = () => {
         audioRef.current.play();
@@ -118,6 +118,13 @@ const PlayerContextProvider = (props) => {
         })
     }
 
+    const formatTime = (minutes, seconds) => {
+        minutes = Number(minutes) || 0;
+        seconds = Number(seconds) || 0;
+        const pad = (num) => num.toString().padStart(2, '0');
+        return `${pad(minutes)}:${pad(seconds)}`;
+    };
+
     const getSongsData = async () => {
         try {
             const response = await axios.get(`${url}/api/song/list`);
@@ -140,6 +147,21 @@ const PlayerContextProvider = (props) => {
         }
     }
 
+    async function getLyrics(artist, songTitle) {
+
+        try {
+          const res = await fetch(`${apiURL}/v1/${artist}/${songTitle}`);
+          if(res.ok === true){
+            const data = await res.json();
+          
+            const lyric = data.lyrics.replace(/(\r\n|\r|\n)/g, '<br />');
+            setLyrics(lyric); 
+          }
+        } catch (error) {
+          console.error("An error occurred:", error);
+        }
+           
+      }
  
     useEffect(()=>{
         setTimeout(()=>{
@@ -171,6 +193,13 @@ const PlayerContextProvider = (props) => {
         setIsHome(location.pathname === "/");
     },[location.pathname])
 
+    useEffect(()=>{
+        if(track){
+            setFoundAlbum(albumsData.find(albumsData => albumsData.name === track.album))
+        }
+    },[track])
+    
+
     const contextValue = {
         audioRef,
         seekBg,
@@ -189,7 +218,7 @@ const PlayerContextProvider = (props) => {
         lyrics,setLyrics,
         foundAlbum,
         shuffledSongsData,setShuffledSongsData,isHome,setIsHome,
-        albumData,setAlbumData
+        albumData,setAlbumData,formatTime,getLyrics
     }
 
     return (

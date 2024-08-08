@@ -11,6 +11,7 @@ const addSong = async (req,res) => {
         const audioUpload = await cloudinary.uploader.upload(audioFile.path, {resource_type:"video"});
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type:"image"});
         const duration = `${Math.floor(audioUpload.duration/60)}:${Math.floor(audioUpload.duration%60)}`;
+        const artist = req.body.artist;
 
         const songData = {
             name,
@@ -18,7 +19,8 @@ const addSong = async (req,res) => {
             album,
             image: imageUpload.secure_url,
             file: audioUpload.secure_url,
-            duration
+            duration,
+            artist
         }
         
         const song = songModel(songData);

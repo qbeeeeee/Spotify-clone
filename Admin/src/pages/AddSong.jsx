@@ -13,6 +13,7 @@ const AddSong = () => {
     const [album,setAlbum] = useState("none");
     const [loading,setLoading] = useState(false);
     const [albumData, setAlbumData] = useState([]);
+    const [artist,setArtist] = useState("");
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
@@ -31,6 +32,7 @@ const AddSong = () => {
             formData.append('image',image);
             formData.append('audio',song);
             formData.append('album',album);
+            formData.append('artist',artist);
 
             const response = await axios.post(`${url}/api/song/add`,formData);
 
@@ -41,6 +43,7 @@ const AddSong = () => {
                 setAlbum("none");
                 setImage(false);
                 setSong(false);
+                setArtist("");
             }
             else{
                 toast.error("Something went wrong");
@@ -107,6 +110,10 @@ const AddSong = () => {
                 <option value="none">None</option>
                 {albumData.map((item,index)=>(<option key={index} value={item.name}>{item.name}</option>))}
             </select>
+        </div>
+        <div className='flex flex-col gap-2.5'>
+            <p>Artist Name</p>
+            <input onChange={(e)=>setArtist(e.target.value)} value={artist} type="text" className='bg-transparent outline-green-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]' placeholder='Type Here' required/>
         </div>
 
         <button className="bg-gradient-to-r from-gray-700 to-gray-900 text-white 

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Player = () => {
 
-    const {isHome,previous2,next2,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
+    const {formatTime,isHome,previous2,next2,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
     const [isHovered,setIsHovered] = useState(false);
     const [isHovered2,setIsHovered2] = useState(false);
     const [progress,setProgress] = useState(50);
@@ -31,13 +31,6 @@ const Player = () => {
             audioRef.current.volume = 0.5;
         }
     }
-
-    const formatTime = (minutes, seconds) => {
-        minutes = Number(minutes) || 0;
-        seconds = Number(seconds) || 0;
-        const pad = (num) => num.toString().padStart(2, '0');
-        return `${pad(minutes)}:${pad(seconds)}`;
-    };
 
     const handleLoop = () => {
         if(isLooped){
@@ -74,11 +67,11 @@ const Player = () => {
        
   return track ? (
     <div className='h-[10%] bg-black flex justify-between items-center text-white px-4'>
-        <div className='hidden lg:flex items-center gap-4'>
+        <div className='hidden lg:flex items-center gap-4 overflow-hidden max-w-[300px] min-w-[300px]'>
             <img className='w-12' src={track.image} alt="" />
             <div>
                 <p onClick={()=>navigate(`/album/${foundAlbum._id}`)} className='hover:underline hover:underline-offest-1 cursor-pointer'>{track.name.toUpperCase()}</p>
-                <p>{track.desc.slice(0,30)+"..."}</p>
+                <p onClick={()=>navigate(`/artist/${track.artist}`)} className='hover:underline hover:underline-offest-1 cursor-pointer opacity-60 hover:opacity-100'>{track.artist}</p>
             </div>
         </div>
         <div className='flex flex-col items-center gap-1 m-auto'>

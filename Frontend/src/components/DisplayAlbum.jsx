@@ -8,7 +8,7 @@ const DisplayAlbum = ({album}) => {
 
     const {id} = useParams();
     const [isHovered,setIsHovered] = useState(false);
-    const {playWithId, albumsData, songsData,track,playStatus,play,pause,albumData,setAlbumData} = useContext(PlayerContext);
+    const {formatTime,playWithId, albumsData, songsData,track,playStatus,play,pause,albumData,setAlbumData} = useContext(PlayerContext);
 
     useEffect(()=>{
         albumsData.map((item)=>{
@@ -61,7 +61,7 @@ const DisplayAlbum = ({album}) => {
                 </p>
                 <p className='text-[15px]'>{albumData.name}</p>
                 <p className='text-[15px] hidden sm:block'>5 days ago</p>
-                <p className='text-[15px] text-center'>{item.duration}</p>
+                <p className='text-[15px] text-center'>{formatTime(...item.duration.split(':').map(Number))}</p>
            </div>
         ))
       }
