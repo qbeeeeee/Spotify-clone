@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Player = () => {
 
-    const {formatTime,isHome,previous2,next2,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
+    const {removeToLikedSongs,likedSongs,addToLikedSongs,formatTime,isHome,previous2,next2,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
     const [isHovered,setIsHovered] = useState(false);
     const [isHovered2,setIsHovered2] = useState(false);
     const [progress,setProgress] = useState(50);
@@ -61,18 +61,26 @@ const Player = () => {
             play();
         }
         else if(isfinished){
-            next();
+            if(isHome){
+                next2();
+            }else{
+                next();
+            }
         }
     }, [isfinished]);
        
   return track ? (
     <div className='h-[10%] bg-black flex justify-between items-center text-white px-4'>
-        <div className='hidden lg:flex items-center gap-4 overflow-hidden max-w-[300px] min-w-[300px]'>
+        <div className='hidden lg:flex items-center gap-4 overflow-hidden max-w-[350px] min-w-[350px]'>
             <img className='w-12' src={track.image} alt="" />
             <div>
                 <p onClick={()=>navigate(`/album/${foundAlbum._id}`)} className='hover:underline hover:underline-offest-1 cursor-pointer'>{track.name.toUpperCase()}</p>
                 <p onClick={()=>navigate(`/artist/${track.artist}`)} className='hover:underline hover:underline-offest-1 cursor-pointer opacity-60 hover:opacity-100'>{track.artist}</p>
             </div>
+            {likedSongs[track.id] === 1
+            ?<img onClick={()=>{removeToLikedSongs(track.id)}} className='w-4 h-4 brightness-125 hover:brightness-150 cursor-pointer' src={assets.added_icon} alt="" />
+            :<img onClick={()=>{addToLikedSongs(track.id)}} className="w-4 h-4 " src={assets.add_icon} alt="" />
+            }
         </div>
         <div className='flex flex-col items-center gap-1 m-auto'>
             <div className='flex gap-6'>

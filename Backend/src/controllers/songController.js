@@ -13,6 +13,17 @@ const addSong = async (req,res) => {
         const duration = `${Math.floor(audioUpload.duration/60)}:${Math.floor(audioUpload.duration%60)}`;
         const artist = req.body.artist;
 
+        let songs = await songModel.find({});
+        let id;
+        if(songs.length>0){
+            let last_song_array = songs.slice(-1);
+            let last_song = last_song_array[0];
+            id = last_song.id+1;
+        }
+        else{
+            id=1;
+        }
+
         const songData = {
             name,
             desc,
@@ -20,7 +31,8 @@ const addSong = async (req,res) => {
             image: imageUpload.secure_url,
             file: audioUpload.secure_url,
             duration,
-            artist
+            artist,
+            id:id
         }
         
         const song = songModel(songData);

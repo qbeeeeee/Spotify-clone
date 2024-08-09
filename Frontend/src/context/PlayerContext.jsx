@@ -2,6 +2,13 @@ import { createContext, useEffect, useRef, useState } from "react";
 import axios from 'axios'
 
 export const PlayerContext = createContext();
+const getDefaultSongs = () => {
+    let songs = {};
+    for (let i = 0; i < 300+1; i++) {
+        songs[i] = 0;
+    }
+    return songs;
+}
 
 const PlayerContextProvider = (props) => {
 
@@ -13,6 +20,10 @@ const PlayerContextProvider = (props) => {
     const apiURL = 'https://api.lyrics.ovh';
 
     const [isHome,setIsHome] = useState(location.pathname === "/");
+    const [likedSongs,setLikedSongs] = useState(getDefaultSongs());
+    const [artist, setArtist] = useState(null);
+    const songRefs = useRef([]);
+    const [artistsData,setArtistsData] = useState([]);
     const [albumData,setAlbumData] = useState("");
     const [albumSongs, setAlbumSongs] = useState([]);
     const [shuffledSongsData, setShuffledSongsData] = useState([]);
@@ -35,6 +46,44 @@ const PlayerContextProvider = (props) => {
             minute:0
         }
     })
+
+    const addToLikedSongs = (itemId) => { 
+        //setLikedSongs((prev)=>({...prev,[itemId]:prev[itemId]+1}));
+        setLikedSongs((prev)=>({...prev,
+            [itemId]: prev[itemId] >= 1 ? prev[itemId] : (prev[itemId] || 0) + 1}));
+        if(localStorage.getItem('auth-token')){
+            fetch(`${url}/api/likedsongs/add`,{
+                method:'POST',
+                headers:{
+                    Accept:'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json',
+                },
+                body:JSON.stringify({"itemId":itemId}),
+            })
+            .then((response)=>response.json())
+            .then((data)=>console.log(data));
+        }
+    }
+
+    const removeToLikedSongs = (itemId) => {
+        //setLikedSongs((prev)=>({...prev,[itemId]:prev[itemId]-1}));
+        setLikedSongs((prev)=>({...prev,
+            [itemId]: prev[itemId] <= 0 ? prev[itemId] : (prev[itemId] || 0) - 1}));
+        if(localStorage.getItem('auth-token')){
+            fetch(`${url}/api/likedsongs/remove`,{
+                method:'POST',
+                headers:{
+                    Accept:'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json',
+                },
+                body:JSON.stringify({"itemId":itemId}),
+            })
+            .then((response)=>response.json())
+            .then((data)=>console.log(data));
+        }
+    }
 
     const play = () => {
         audioRef.current.play();
@@ -77,6 +126,7 @@ const PlayerContextProvider = (props) => {
                 setLyrics("No Lyrics Found");
                 await audioRef.current.play();
                 setPlayStatus(true);
+                handleNextSong(index-1);
             }
         })
     }
@@ -84,15 +134,6 @@ const PlayerContextProvider = (props) => {
     const seekSong = async (e) => {
         audioRef.current.currentTime = ((e.nativeEvent.offsetX / seekBg.current.offsetWidth)*audioRef.current.duration);
     }
-
-    useEffect(()=>{
-        setAlbumSongs([]);
-        songsData.map((item)=>{   
-          if(item.album === albumData.name){
-            setAlbumSongs(prevSongs => [...prevSongs,item]);
-          }
-        })
-    },[songsData,albumData])
 
     const next = async () => {
         albumSongs.map(async (item,index)=>{        
@@ -114,6 +155,7 @@ const PlayerContextProvider = (props) => {
                 await audioRef.current.play();
                 setPlayStatus(true);
                 setIsFinished(false);
+                handleNextSong(index+1);
             }
         })
     }
@@ -147,8 +189,17 @@ const PlayerContextProvider = (props) => {
         }
     }
 
-    async function getLyrics(artist, songTitle) {
+    const getArtistsData = async () => {
+        try {
+            const response = await axios.get(`${url}/api/artist/list`);  
+            setArtistsData(response.data.artist);       
+        } catch (error) {
+            
+        }
+    }
 
+    async function getLyrics(artist, songTitle) {
+        
         try {
           const res = await fetch(`${apiURL}/v1/${artist}/${songTitle}`);
           if(res.ok === true){
@@ -161,7 +212,45 @@ const PlayerContextProvider = (props) => {
           console.error("An error occurred:", error);
         }
            
-      }
+    }
+
+    const handleNextSong = (index) => {
+        if (songRefs.current[index]) {
+          songRefs.current[index].scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+        }
+    };
+
+    const formatNumberWithCommas = (number) => {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    useEffect(()=>{
+        if(localStorage.getItem('auth-token')){
+            fetch(`${url}/api/likedsongs/getlikedsongs`,{
+                method:'POST',
+                headers:{
+                    Accept:'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json',
+                },
+                body:"",
+            }).then((response)=>response.json())
+            .then((data)=>setLikedSongs(data));
+        }
+    },[])
+
+    useEffect(()=>{
+        setAlbumSongs([]);
+        songsData.map((item)=>{   
+          if(item.album === albumData.name){
+            setAlbumSongs(prevSongs => [...prevSongs,item]);
+          }
+        })
+    },[songsData,albumData])
  
     useEffect(()=>{
         setTimeout(()=>{
@@ -178,7 +267,7 @@ const PlayerContextProvider = (props) => {
                     }
                 })
                 if((audioRef.current.currentTime/audioRef.current.duration*100)===100){
-                    setIsFinished(true);
+                    setIsFinished(true);            
                 }
             }
         }, 1000);
@@ -187,6 +276,7 @@ const PlayerContextProvider = (props) => {
     useEffect(()=>{
         getSongsData();
         getAlbumsData();
+        getArtistsData();
     },[])
 
     useEffect(()=>{
@@ -218,7 +308,9 @@ const PlayerContextProvider = (props) => {
         lyrics,setLyrics,
         foundAlbum,
         shuffledSongsData,setShuffledSongsData,isHome,setIsHome,
-        albumData,setAlbumData,formatTime,getLyrics
+        albumData,setAlbumData,formatTime,getLyrics,artistsData,handleNextSong,
+        songRefs,artist,setArtist,formatNumberWithCommas,
+        addToLikedSongs,removeToLikedSongs,likedSongs
     }
 
     return (

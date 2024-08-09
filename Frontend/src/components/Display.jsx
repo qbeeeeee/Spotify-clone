@@ -6,6 +6,8 @@ import { PlayerContext } from '../context/PlayerContext';
 import { assets } from '../assets/frontend-assets/assets';
 import SearchBar from './SearchBar';
 import Artist from './Artist';
+import LoginSignUp from './LoginSignUp';
+import LikedSongs from './LikedSongs';
 
 
 const Display = () => {
@@ -67,6 +69,8 @@ const Display = () => {
            <Route path='/album/:id' element={<DisplayAlbum album={albumsData.find((x)=>(x._id === albumId))}/>}/>
            <Route path='/search' element={<SearchBar/>}/>
            <Route path='/artist/:artist' element={<Artist/>}/>
+           <Route path='/login' element={<LoginSignUp/>}/>
+           <Route path='/likedsongs' element={<LikedSongs/>}/>
         </Routes>
       : null
       }

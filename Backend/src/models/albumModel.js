@@ -6,6 +6,7 @@ const albumSchema = new mongoose.Schema({
     bgColour: { type: String, required: true },
     image: { type: String, required: true },
     artist: { type: String, required: true },
+    id: { type: Number, required:true }, 
 })
 
 const albumModel = mongoose.models.album || mongoose.model("album",albumSchema);

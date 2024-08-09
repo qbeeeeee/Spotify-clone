@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import Navbar from './Navbar'
 import AlbumItem from './AlbumItem'
 import SongItem from './SongItem'
@@ -15,7 +15,7 @@ const shuffleArray = (array) => {
 
 const DisplayHome = () => {
 
-  const {songsData,albumsData,shuffledSongsData, setShuffledSongsData} = useContext(PlayerContext);
+  const {songsData,albumsData,shuffledSongsData, setShuffledSongsData,handleNextSong,songRefs} = useContext(PlayerContext);
 
   useEffect(() => {
     setShuffledSongsData(shuffleArray(songsData));
@@ -33,7 +33,11 @@ const DisplayHome = () => {
       <div className='mb-4'>
         <h1 className='my-5 font-bold text-2xl'>Today's biggest hits</h1>
         <div className='flex overflow-auto'>
-            {shuffledSongsData.map((item,index)=>(<SongItem key={index} name={item.name} desc={item.desc} id={item._id} image={item.image}/>))}
+            {shuffledSongsData.map((item,index)=>(
+              <div key={item._id} ref={(el) => (songRefs.current[index] = el)} onClick={() => handleNextSong(index)} >
+               <SongItem name={item.name} desc={item.desc} id={item._id} image={item.image}/>
+              </div>
+            ))}
         </div>
       </div>
     </>

@@ -31,6 +31,8 @@ import menu_icon from './menu_icon.png'
 import cross_icon from './cross_icon.png'
 import plays2_icon from './plays2_icon.png'
 import mic2_icon from './mic2_icon.png'
+import add_icon from './add_icon.png'
+import added_icon from './added_icon.png'
  
 export const assets = {
     bell_icon,
@@ -63,5 +65,6 @@ export const assets = {
     lowvolume_icon,
     loop2_icon,
     menu_icon,cross_icon,
-    plays2_icon,mic2_icon
+    plays2_icon,mic2_icon,
+    add_icon,added_icon
 }

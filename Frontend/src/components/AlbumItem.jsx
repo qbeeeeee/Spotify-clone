@@ -4,7 +4,7 @@ import { assets } from '../assets/frontend-assets/assets'
  
 const AlbumItem = ({image,name,desc,id}) => {
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [isHovered, setIsHovered] = useState(false);
     const [isHovered2, setIsHovered2] = useState(false);
 

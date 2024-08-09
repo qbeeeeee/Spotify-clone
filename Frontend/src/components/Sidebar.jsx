@@ -38,6 +38,10 @@ const Sidebar = () => {
                     </div>
                 </div>
             </div>
+            {localStorage.getItem('auth-token')
+            ? <div className="flex items-center pl-4 pb-3 justify-between"><img onClick={()=>navigate('/likedsongs')} className='w-8' src={assets.stack_icon} alt="" /></div>
+            : null
+            }
             <div className='p-4 bg-[#242424] m-2 rounded font-semibold flex flex-col items-start justify-start gap-1 pl-4'>
                 <h1>Create your first playlist</h1>
                 <p className='font-light'>its easy we will help you</p>

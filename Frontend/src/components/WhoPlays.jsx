@@ -5,7 +5,7 @@ import { PlayerContext } from '../context/PlayerContext';
 
 const WhoPlays = () => {
 
-    const {setWhoPlays,whoPlays,foundAlbum,track} = useContext(PlayerContext);
+    const {setWhoPlays,whoPlays,foundAlbum,track,artistsData,setIsLyrics,artist,setArtist,formatNumberWithCommas} = useContext(PlayerContext);
 
     const [isOverflowing, setIsOverflowing] = useState(false);
     const textRef = useRef(null);
@@ -32,6 +32,10 @@ const WhoPlays = () => {
         window.addEventListener('resize', checkOverflow);
         return () => window.removeEventListener('resize', checkOverflow);
     }, [track.name]);
+
+    useEffect(()=> {
+        setArtist(artistsData.find(x => x.name === track.artist));
+    },[track])
  
   return (
     <div className='w-[28%] p-2 flex-col text-white hidden lg:flex overflow-y-auto h-screen max-h-[99%] rounded-2xl'>
@@ -65,7 +69,7 @@ const WhoPlays = () => {
                     <div className="absolute bottom-3 transform -translate-x-1 -translate-y-5 w-max bg-[#252525] border text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity delay-300 duration-300">
                         {track.name}
                     </div>
-                    <div onClick={()=>navigate(`/album/${foundAlbum._id}`)} ref={textRef} className='font-bold hover:underline text-2xl overflow-hidden whitespace-nowrap max-w-sm' style={{
+                    <div onClick={()=>{navigate(`/album/${foundAlbum._id}`);setIsLyrics(false);}} ref={textRef} className='font-bold hover:underline text-2xl overflow-hidden whitespace-nowrap max-w-sm' style={{
                         ...(isOverflowing && {
                         WebkitMaskImage: 'linear-gradient(to right, black 70%, transparent 100%)',
                         maskImage: 'linear-gradient(to right, black 70%, transparent 100%)'
@@ -73,13 +77,36 @@ const WhoPlays = () => {
                         {track.name}
                     </div>
                 </div>
-                <div onClick={()=>navigate(`/artist/${track.artist}`)} className='opacity-70 hover:opacity-100 hover:underline cursor-pointer'> 
+                <div onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='opacity-70 hover:opacity-100 hover:underline cursor-pointer'> 
                     {track.artist}
                 </div>
             </div>
-            <div className='h-full pt-8 rounded-lg'>
-                <div className='pl-5 pr-5 pb-5 flex items-center justify-around'>
-                    <img className='w-[100%] h-[100%] rounded-xl' src={foundAlbum.image} alt="" />
+            <div className='h-full pt-8 rounded-lg bg-[#121212] '>
+                <div className='mx-5 flex items-center overflow-hidden'>
+                    <img className='w-[400px] h-[260px] object-cover rounded-t-xl' src={artist?artist.image:"Fetching Data"} alt="" />
+                </div>
+                <div className='relative bg-[#202020] h-[160px] mx-5 rounded-b-2xl cursor-pointer'>
+                    <p onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='pt-4 pl-5 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
+                    <button className="absolute right-4 top-10 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
+                        Follow
+                    </button>
+                    <p className='pt-2 pl-5 font-bold text-white '>{artist?formatNumberWithCommas(artist.listeners)+" monthly listeners":"Fetching Data"}</p>
+                    <p className='pt-3 px-5 text-white text-xs '>{artist?artist.desc.slice(0,170)+"...":"Fetching Data"}</p>
+                </div>
+                <div className='pl-5 relative bg-[#202020] mt-4 h-[250px] mx-5 rounded-2xl cursor-pointer'>
+                    <p className='pt-4 font-bold text-white'>Credits</p>
+                    <p onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='pt-2 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
+                    <p className='text-white text-sm opacity-70'>Main Artist</p>
+                    <button className="absolute right-4 top-12 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
+                        Follow
+                    </button>
+                    <p onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='pt-4 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
+                    <p className='text-white text-sm opacity-70'>Composer,Lyricist</p>
+                    <button className="absolute right-4 top-28 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
+                        Follow
+                    </button>
+                    <p className='pt-4 font-bold text-white hover:underline'>Some Other Dude</p>
+                    <p className='text-white text-sm opacity-70'>Composer,Lyricist</p>
                 </div>
             </div>
         </div>

@@ -9,13 +9,25 @@ const addAlbum = async (req,res) => {
         const imageFile = req.file;
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type:"image"});
         const artist = req.body.artist;
+
+        let albums = await albumModel.find({});
+        let id;
+        if(albums.length>0){
+            let last_album_array = albums.slice(-1);
+            let last_album = last_album_array[0];
+            id = last_album.id+1;
+        }
+        else{
+            id=1;
+        }
         
         const albumData = {
             name,
             desc,
             bgColour,
             image: imageUpload.secure_url,
-            artist
+            artist,
+            id:id
         }
 
         const album = albumModel(albumData);
