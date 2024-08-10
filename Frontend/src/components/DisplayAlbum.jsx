@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Navbar from './Navbar'
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { assets } from '../assets/frontend-assets/assets';
 import { PlayerContext } from '../context/PlayerContext';
 
@@ -8,7 +8,8 @@ const DisplayAlbum = ({album}) => {
 
     const {id} = useParams();
     const [isHovered,setIsHovered] = useState(false);
-    const {formatTime,playWithId, albumsData, songsData,track,playStatus,play,pause,albumData,setAlbumData} = useContext(PlayerContext);
+    const navigate = useNavigate();
+    const {setArtist,artistsData,albumId,removeToLikedArtists,addToLikedArtists,artist,likedArtists,totalSongsAlbumTime,totalSongsAlbum,removeToLikedSongs,addToLikedSongs,likedSongs,formatTime,playWithId, albumsData, songsData,track,playStatus,play,pause,albumData,setAlbumData} = useContext(PlayerContext);
 
     useEffect(()=>{
         albumsData.map((item)=>{
@@ -16,7 +17,11 @@ const DisplayAlbum = ({album}) => {
             setAlbumData(item);
           }
         })
-    })
+    },[])
+
+    useEffect(()=> {
+      setArtist(artistsData.find(x => x.name === track.artist));
+  },[track])
 
   return albumData ? (
     <> 
@@ -31,16 +36,20 @@ const DisplayAlbum = ({album}) => {
                 <img className='inline-block w-5' src={assets.spotify_logo} alt="" />
                 <b>Spotify</b>
                 • 1,424,555 likes
-                • <b>50 songs,</b>
-                about 2 hr 20 min
+                • <b>{totalSongsAlbum} songs </b>
+                about {totalSongsAlbumTime} mins
             </p>
         </div>
       </div>
       <div className='flex gap-8'> 
         <img className="filter hover:brightness-125 hover:scale-105 hover:saturate-150 hoverhue-rotate-15 rounded color-green rounded w-14 pt-10 "
         src={assets.play2_icon} onClick={()=>{playWithId(songsData.find(x => x.album === albumData.name)._id)}} alt="" />
-        <img className="filter opacity-80 hover:opacity-100 hover:brightness-110 hover:scale-105 hover:saturate-150 hover:hue-rotate-15 rounded color-green rounded w-10 h-[100%] pt-12 "
-        src={assets.like_icon} alt="" />
+        {artistsData && artist ?likedArtists[artistsData.find((x)=>x.name === albumsData.find((x)=>x._id === albumId).artist).id] === 1
+          ?<img onClick={()=>{removeToLikedArtists(artistsData.find((x)=>x.name === albumsData.find((x)=>x._id === albumId).artist).id)}} className="filter opacity-80 hover:opacity-100 hover:brightness-110 hover:scale-105 hover:saturate-150 hover:hue-rotate-15 rounded color-green rounded w-10 h-[100%] pt-12 "
+          src={assets.like2_icon} alt="" />
+          :<img onClick={localStorage.getItem('auth-token')?()=>{addToLikedArtists(artistsData.find((x)=>x.name === albumsData.find((x)=>x._id === albumId).artist).id)}:()=>navigate("/login")} className="filter opacity-80 hover:opacity-100 hover:brightness-110 hover:scale-105 hover:saturate-150 hover:hue-rotate-15 rounded color-green rounded w-10 h-[100%] pt-12 "
+          src={assets.like_icon} alt="" />
+        :null}
         <img className="filter opacity-80 hover:opacity-100 hover:brightness-125 hover:scale-105 hover:saturate-150 hoverhue-rotate-15 rounded color-green rounded w-8 h-[100%] pt-12  "
         src={assets.menu_icon} alt="" />
       </div>
@@ -61,7 +70,12 @@ const DisplayAlbum = ({album}) => {
                 </p>
                 <p className='text-[15px]'>{albumData.name}</p>
                 <p className='text-[15px] hidden sm:block'>5 days ago</p>
-                <p className='text-[15px] text-center'>{formatTime(...item.duration.split(':').map(Number))}</p>
+                <p className='text-[15px] text-center flex items-center justify-center'>
+                  {likedSongs[item.id] === 1
+                  ?<img onClick={()=>{removeToLikedSongs(track.id)}} className='w-4 h-4 mr-4' src={assets.added_icon} alt="" />
+                  :<img onClick={localStorage.getItem('auth-token')?(e)=>{e.stopPropagation();addToLikedSongs(item.id)}:()=>navigate("/login")} className='w-4 h-4 mr-4 hover:brightness-150' src={assets.add_icon} alt="" /> }
+                  {formatTime(...item.duration.split(':').map(Number))}
+                </p>
            </div>
         ))
       }

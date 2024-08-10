@@ -68,6 +68,32 @@ app.post('/api/likedsongs/getlikedsongs', fetchUser, async (req,res)=>{
     res.json(userData.likedSongs);
 })
 
+app.post('/api/likedalbums/add',fetchUser, async (req,res)=>{
+    console.log("Added",req.body.itemId);
+    let userData = await userModel.findOne({_id:req.user.id});
+    if(userData.likedAlbums[req.body.itemId]>=1){
+        return
+    }
+    userData.likedAlbums[req.body.itemId] += 1;
+    await userModel.findOneAndUpdate({_id:req.user.id},{likedAlbums:userData.likedAlbums});
+    res.send("Added");
+})
+
+app.post('/api/likedalbums/remove', fetchUser, async (req,res)=>{
+    console.log("Removed",req.body.itemId);
+    let userData = await userModel.findOne({_id:req.user.id});
+    if(userData.likedAlbums[req.body.itemId]>0){
+        userData.likedAlbums[req.body.itemId] -= 1;
+    }
+    await userModel.findOneAndUpdate({_id:req.user.id},{likedAlbums:userData.likedAlbums});
+    res.send("Removed");
+})
+
+app.post('/api/likedalbums/getlikedalbums', fetchUser, async (req,res)=>{
+    let userData = await userModel.findOne({_id:req.user.id});
+    res.json(userData.likedAlbums);
+})
+
 app.get('/',(req,res)=> res.send("API Working"))
 
 app.listen(port, ()=>console.log(`Server started on ${port}`))

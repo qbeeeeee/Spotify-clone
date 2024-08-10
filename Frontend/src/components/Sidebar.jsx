@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {assets} from '../assets/frontend-assets/assets'
 import { useNavigate } from 'react-router-dom'
+import { PlayerContext } from '../context/PlayerContext';
 
 const Sidebar = () => {
 
     const navigate = useNavigate();
+    const {totalSongs,totalArtists} = useContext(PlayerContext);
 
   return (
     <div className='w-[22%] p-2 flex-col gap-2 text-white hidden lg:flex'>
@@ -39,7 +41,22 @@ const Sidebar = () => {
                 </div>
             </div>
             {localStorage.getItem('auth-token')
-            ? <div className="flex items-center pl-4 pb-3 justify-between"><img onClick={()=>navigate('/likedsongs')} className='w-8' src={assets.stack_icon} alt="" /></div>
+            ? <div>
+                <div onClick={()=>navigate('/likedsongs')} className="flex pl-4 pt-3 pb-3 rounded-xl cursor-pointer flex-row hover:bg-zinc-800">
+                    <img className='w-10 h-10 opacity-70 hover:opacity-100' src={assets.likedsongs_icon} alt="" />
+                    <div className="ml-3">
+                        <p className='font-bold text-white'>Liked Songs</p>
+                        <p className='opacity-70'>Playlist • {totalSongs}</p>
+                    </div>
+                </div>
+                <div onClick={()=>navigate('/likedartists')} className="flex pl-4 pt-3 pb-3 rounded-xl cursor-pointer flex-row hover:bg-zinc-800">
+                    <img className='w-10 h-10 opacity-70 hover:opacity-100' src={assets.following_icon} alt="" />
+                    <div className="ml-3">
+                        <p className='font-bold text-white'>Following</p>
+                        <p className='opacity-70'>Artists • {totalArtists}</p>
+                    </div>
+                </div>
+            </div>
             : null
             }
             <div className='p-4 bg-[#242424] m-2 rounded font-semibold flex flex-col items-start justify-start gap-1 pl-4'>

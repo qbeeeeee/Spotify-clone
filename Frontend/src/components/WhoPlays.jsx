@@ -5,7 +5,7 @@ import { PlayerContext } from '../context/PlayerContext';
 
 const WhoPlays = () => {
 
-    const {setWhoPlays,whoPlays,foundAlbum,track,artistsData,setIsLyrics,artist,setArtist,formatNumberWithCommas} = useContext(PlayerContext);
+    const {removeToLikedArtists,addToLikedArtists,likedArtists,setWhoPlays,whoPlays,foundAlbum,track,artistsData,setIsLyrics,artist,setArtist,formatNumberWithCommas} = useContext(PlayerContext);
 
     const [isOverflowing, setIsOverflowing] = useState(false);
     const textRef = useRef(null);
@@ -87,9 +87,14 @@ const WhoPlays = () => {
                 </div>
                 <div className='relative bg-[#202020] h-[160px] mx-5 rounded-b-2xl cursor-pointer'>
                     <p onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='pt-4 pl-5 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
-                    <button className="absolute right-4 top-10 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
+                    {artist?likedArtists[artist.id] === 1
+                    ?<button onClick={()=>{removeToLikedArtists(artist.id)}} className="absolute right-4 top-10 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
+                        Unfollow
+                    </button>
+                    :<button onClick={localStorage.getItem('auth-token')?()=>{addToLikedArtists(artist.id)}:()=>navigate("/login")} className="absolute right-4 top-10 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
                         Follow
                     </button>
+                    :null}
                     <p className='pt-2 pl-5 font-bold text-white '>{artist?formatNumberWithCommas(artist.listeners)+" monthly listeners":"Fetching Data"}</p>
                     <p className='pt-3 px-5 text-white text-xs '>{artist?artist.desc.slice(0,170)+"...":"Fetching Data"}</p>
                 </div>
@@ -97,14 +102,24 @@ const WhoPlays = () => {
                     <p className='pt-4 font-bold text-white'>Credits</p>
                     <p onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='pt-2 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
                     <p className='text-white text-sm opacity-70'>Main Artist</p>
-                    <button className="absolute right-4 top-12 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
+                    {artist?likedArtists[artist.id] === 1
+                    ?<button onClick={()=>{removeToLikedArtists(artist.id)}} className="absolute right-4 top-10 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
+                        Unfollow
+                    </button>
+                    :<button onClick={localStorage.getItem('auth-token')?()=>{addToLikedArtists(artist.id)}:()=>navigate("/login")} className="absolute right-4 top-10 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
                         Follow
                     </button>
+                    :null}
                     <p onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='pt-4 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
                     <p className='text-white text-sm opacity-70'>Composer,Lyricist</p>
-                    <button className="absolute right-4 top-28 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
+                    {artist?likedArtists[artist.id] === 1
+                    ?<button onClick={()=>{removeToLikedArtists(artist.id)}} className="absolute right-4 top-28 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
+                        Unfollow
+                    </button>
+                    :<button onClick={localStorage.getItem('auth-token')?()=>{addToLikedArtists(artist.id)}:()=>navigate("/login")} className="absolute right-4 top-28 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
                         Follow
                     </button>
+                    :null}
                     <p className='pt-4 font-bold text-white hover:underline'>Some Other Dude</p>
                     <p className='text-white text-sm opacity-70'>Composer,Lyricist</p>
                 </div>

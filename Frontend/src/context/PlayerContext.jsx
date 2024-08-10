@@ -1,5 +1,6 @@
 import { createContext, useEffect, useRef, useState } from "react";
 import axios from 'axios'
+import { useLocation } from "react-router-dom";
 
 export const PlayerContext = createContext();
 const getDefaultSongs = () => {
@@ -20,6 +21,12 @@ const PlayerContextProvider = (props) => {
     const apiURL = 'https://api.lyrics.ovh';
 
     const [isHome,setIsHome] = useState(location.pathname === "/");
+    const [totalArtists,setTotalArtists] = useState(0);
+    const [totalSongsAlbumTime,setTotalSongsAlbumTime] = useState(0);
+    const [likedArtists,setLikedArtists] = useState(getDefaultSongs());
+    const [totalSongsAlbum,setTotalSongsAlbum] = useState(0);
+    const [totalSongs,setTotalSongs] = useState(0);
+    const [totalSongsTime,setTotalSongsTime] = useState(0);
     const [likedSongs,setLikedSongs] = useState(getDefaultSongs());
     const [artist, setArtist] = useState(null);
     const songRefs = useRef([]);
@@ -47,6 +54,10 @@ const PlayerContextProvider = (props) => {
         }
     })
 
+    const location2 = useLocation();
+    const isAlbum = location2.pathname.includes("album");
+    const albumId = isAlbum ? location2.pathname.split('/').pop() : "";
+
     const addToLikedSongs = (itemId) => { 
         //setLikedSongs((prev)=>({...prev,[itemId]:prev[itemId]+1}));
         setLikedSongs((prev)=>({...prev,
@@ -72,6 +83,44 @@ const PlayerContextProvider = (props) => {
             [itemId]: prev[itemId] <= 0 ? prev[itemId] : (prev[itemId] || 0) - 1}));
         if(localStorage.getItem('auth-token')){
             fetch(`${url}/api/likedsongs/remove`,{
+                method:'POST',
+                headers:{
+                    Accept:'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json',
+                },
+                body:JSON.stringify({"itemId":itemId}),
+            })
+            .then((response)=>response.json())
+            .then((data)=>console.log(data));
+        }
+    }
+
+    const addToLikedArtists = (itemId) => { 
+        //setLikedSongs((prev)=>({...prev,[itemId]:prev[itemId]+1}));
+        setLikedArtists((prev)=>({...prev,
+            [itemId]: prev[itemId] >= 1 ? prev[itemId] : (prev[itemId] || 0) + 1}));
+        if(localStorage.getItem('auth-token')){
+            fetch(`${url}/api/likedalbums/add`,{
+                method:'POST',
+                headers:{
+                    Accept:'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json',
+                },
+                body:JSON.stringify({"itemId":itemId}),
+            })
+            .then((response)=>response.json())
+            .then((data)=>console.log(data));
+        }
+    }
+
+    const removeToLikedArtists = (itemId) => {
+        //setLikedSongs((prev)=>({...prev,[itemId]:prev[itemId]-1}));
+        setLikedArtists((prev)=>({...prev,
+            [itemId]: prev[itemId] <= 0 ? prev[itemId] : (prev[itemId] || 0) - 1}));
+        if(localStorage.getItem('auth-token')){
+            fetch(`${url}/api/likedalbums/remove`,{
                 method:'POST',
                 headers:{
                     Accept:'application/form-data',
@@ -228,6 +277,80 @@ const PlayerContextProvider = (props) => {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
 
+
+    useEffect(()=>{
+        let totalAmount = 0;
+        for (const item of songsData) { 
+            if (item.album === track.album) {
+              totalAmount++;
+            }
+          }
+        setTotalSongsAlbum(totalAmount); 
+        
+        let totalAmountOfTime = 0;
+        for (const item of songsData) {    
+            if(isAlbum && albumsData.find((x)=>(x._id == albumId))){
+                if (item.album === albumsData.find((x)=>(x._id == albumId)).name) {
+                    let itemInfo = songsData.find((x) => x.id === Number(item.id));
+                    if (itemInfo) {
+                      const [minutes, seconds] = itemInfo.duration.split(':').map(Number);
+                      const durationInSeconds = minutes * 60 + seconds;
+                      
+                      totalAmountOfTime += durationInSeconds;
+                    }
+                  }
+            }  
+        }
+        const totalMinutes = Math.floor(totalAmountOfTime / 60);
+        const totalSeconds = totalAmountOfTime % 60;
+        const formattedTotalTime = `${totalMinutes}:${totalSeconds.toString().padStart(2, '0')}`;
+
+        setTotalSongsAlbumTime(formattedTotalTime);
+    },[track,isAlbum])
+        
+    useEffect(()=>{
+        let totalAmount = 0;
+        for(const item in likedSongs)
+        {
+            if(likedSongs[item]>0)
+            {
+                totalAmount++;
+            }
+        }
+        setTotalSongs(totalAmount);
+
+        let totalAmountOfTime = 0;
+        for (const item in likedSongs) {
+            if (likedSongs[item] > 0) {
+              let itemInfo = songsData.find((product) => product.id === Number(item));
+              if (itemInfo) {
+                const [minutes, seconds] = itemInfo.duration.split(':').map(Number);
+                const durationInSeconds = minutes * 60 + seconds;
+          
+                totalAmountOfTime += durationInSeconds;
+              }
+            }
+        }
+        const totalMinutes = Math.floor(totalAmountOfTime / 60);
+        const totalSeconds = totalAmountOfTime % 60;
+        const formattedTotalTime = `${totalMinutes}:${totalSeconds.toString().padStart(2, '0')}`;
+
+        setTotalSongsTime(formattedTotalTime);
+
+    },[likedSongs,track])
+
+    useEffect(()=>{
+        let totalAmount = 0;
+        for(const item in likedArtists)
+        {
+            if(likedArtists[item]>0)
+            {
+                totalAmount++;
+            }
+        }
+        setTotalArtists(totalAmount);
+    },[likedArtists])
+
     useEffect(()=>{
         if(localStorage.getItem('auth-token')){
             fetch(`${url}/api/likedsongs/getlikedsongs`,{
@@ -240,6 +363,21 @@ const PlayerContextProvider = (props) => {
                 body:"",
             }).then((response)=>response.json())
             .then((data)=>setLikedSongs(data));
+        }
+    },[])
+
+    useEffect(()=>{
+        if(localStorage.getItem('auth-token')){
+            fetch(`${url}/api/likedalbums/getlikedalbums`,{
+                method:'POST',
+                headers:{
+                    Accept:'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json',
+                },
+                body:"",
+            }).then((response)=>response.json())
+            .then((data)=>setLikedArtists(data));
         }
     },[])
 
@@ -310,7 +448,9 @@ const PlayerContextProvider = (props) => {
         shuffledSongsData,setShuffledSongsData,isHome,setIsHome,
         albumData,setAlbumData,formatTime,getLyrics,artistsData,handleNextSong,
         songRefs,artist,setArtist,formatNumberWithCommas,
-        addToLikedSongs,removeToLikedSongs,likedSongs
+        addToLikedSongs,removeToLikedSongs,likedSongs,totalSongs,setTotalSongs,
+        totalSongsTime,totalSongsAlbum,totalSongsAlbumTime,
+        removeToLikedArtists,addToLikedArtists,likedArtists,albumId,totalArtists
     }
 
     return (

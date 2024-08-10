@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Player = () => {
 
-    const {removeToLikedSongs,likedSongs,addToLikedSongs,formatTime,isHome,previous2,next2,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
+    const {artistsData,removeToLikedSongs,likedSongs,addToLikedSongs,formatTime,isHome,previous2,next2,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
     const [isHovered,setIsHovered] = useState(false);
     const [isHovered2,setIsHovered2] = useState(false);
     const [progress,setProgress] = useState(50);
@@ -75,11 +75,11 @@ const Player = () => {
             <img className='w-12' src={track.image} alt="" />
             <div>
                 <p onClick={()=>navigate(`/album/${foundAlbum._id}`)} className='hover:underline hover:underline-offest-1 cursor-pointer'>{track.name.toUpperCase()}</p>
-                <p onClick={()=>navigate(`/artist/${track.artist}`)} className='hover:underline hover:underline-offest-1 cursor-pointer opacity-60 hover:opacity-100'>{track.artist}</p>
+                <p onClick={()=>navigate(`/artist/${artistsData.find((x)=>x.name === track.artist)._id}`)} className='hover:underline hover:underline-offest-1 cursor-pointer opacity-60 hover:opacity-100'>{track.artist}</p>
             </div>
             {likedSongs[track.id] === 1
             ?<img onClick={()=>{removeToLikedSongs(track.id)}} className='w-4 h-4 brightness-125 hover:brightness-150 cursor-pointer' src={assets.added_icon} alt="" />
-            :<img onClick={()=>{addToLikedSongs(track.id)}} className="w-4 h-4 " src={assets.add_icon} alt="" />
+            :<img onClick={localStorage.getItem('auth-token')?()=>{addToLikedSongs(track.id)}:()=>navigate("/login")} className="w-4 h-4 cursor-pointer hover:brightness-150" src={assets.add_icon} alt="" />
             }
         </div>
         <div className='flex flex-col items-center gap-1 m-auto'>
