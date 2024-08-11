@@ -57,6 +57,8 @@ const Display = () => {
         <img className='w-8 p-2 bg-zinc-800 bg-opacity-60 rounded-2xl cursor-pointer' src={assets.arrow_right} alt="" />
       </div>
       <div>
+        <p className='flex justify-center items-center mt-10 mb-5 font-bold text-3xl'>{track.name}</p>
+        <p className='flex justify-center items-center font-bold text-lg'>{track.artist}</p>
         <div className="pt-20 text-2xl pb-20" dangerouslySetInnerHTML={{ __html: lyrics }}/>
       </div>
     </div>

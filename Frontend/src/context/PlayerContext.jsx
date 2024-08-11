@@ -21,6 +21,11 @@ const PlayerContextProvider = (props) => {
     const apiURL = 'https://api.lyrics.ovh';
 
     const [isHome,setIsHome] = useState(location.pathname === "/");
+    const [isLikedSongs,setIsLikedSongs] = useState(location.pathname === "/likedsongs");
+    const isArtist = location.pathname.includes("artist");
+    const [artistSongs,setArtistSongs] = useState([]);
+    const [isShuffle,setIsShuffle] = useState(false);
+    const [userData,setUserData] = useState([]);
     const [totalArtists,setTotalArtists] = useState(0);
     const [totalSongsAlbumTime,setTotalSongsAlbumTime] = useState(0);
     const [likedArtists,setLikedArtists] = useState(getDefaultSongs());
@@ -155,58 +160,163 @@ const PlayerContextProvider = (props) => {
         
         await audioRef.current.play();
         setPlayStatus(true);
+        setIsFinished(false);
     }
 
-    const previous = async () => {        
-        albumSongs.map(async (item,index)=>{
-            if(track._id === item._id && index > 0){
-                await setTrack(albumSongs[index-1]);
-                setLyrics("No Lyrics Found");
-                await audioRef.current.play();
-                setPlayStatus(true);
-            }
-        })
-    }
-
-    const previous2 = async () => {
-        shuffledSongsData.map(async (item,index)=>{
-            if(track._id === item._id && index > 0){
-                await setTrack(shuffledSongsData[index-1]);
-                setLyrics("No Lyrics Found");
-                await audioRef.current.play();
-                setPlayStatus(true);
-                handleNextSong(index-1);
-            }
-        })
+    const previous = async () => { 
+        if(isLikedSongs){ 
+            let a;
+            for(const item in likedSongs)
+                {
+                    if(likedSongs[item]>0){ 
+                        if(Number(item) === track.id && songsData[a-1]){
+                            await setTrack(songsData[a-1]);
+                            setLyrics("No Lyrics Found");
+                            await audioRef.current.play();
+                            setPlayStatus(true);
+                            setIsFinished(false);
+                            break;
+                        }
+                        a = item;
+                    }   
+                }
+        }else if(isHome){ 
+            shuffledSongsData.map(async (item,index)=>{
+                if(track._id === item._id && index > 0){
+                    await setTrack(shuffledSongsData[index-1]);
+                    setLyrics("No Lyrics Found");
+                    await audioRef.current.play();
+                    setPlayStatus(true);
+                    setIsFinished(false);
+                    handleNextSong(index-1);
+                }
+            })
+        }else if(isArtist){
+            artistSongs.map(async (item,index)=>{
+                if(track._id === item._id && index > 0){
+                    await setTrack(artistSongs[index-1]);
+                    setLyrics("No Lyrics Found");
+                    await audioRef.current.play();
+                    setPlayStatus(true);
+                    setIsFinished(false);
+                    handleNextSong(index-1);
+                }
+            })
+        }else{
+            albumSongs.map(async (item,index)=>{
+                if(track._id === item._id && index > 0){
+                    await setTrack(albumSongs[index-1]);
+                    setLyrics("No Lyrics Found");
+                    await audioRef.current.play();
+                    setPlayStatus(true);
+                    setIsFinished(false);
+                }
+            })
+        }
     }
 
     const seekSong = async (e) => {
         audioRef.current.currentTime = ((e.nativeEvent.offsetX / seekBg.current.offsetWidth)*audioRef.current.duration);
     }
-
-    const next = async () => {
-        albumSongs.map(async (item,index)=>{        
-            if(track._id === item._id && index < albumSongs.length-1){
-                await setTrack(albumSongs[index+1]);
+   
+    const next = async () => {   
+        if(isLikedSongs){
+            if(isShuffle){
+                const randomIndex = Math.floor(Math.random() * totalSongs);
+                let b = 0;
+                for(const item in likedSongs)
+                    {
+                        if(likedSongs[item]>0){
+                            if(b===randomIndex){
+                                await setTrack(songsData[item-1]);
+                                setLyrics("No Lyrics Found");
+                                await audioRef.current.play();
+                                setPlayStatus(true);
+                                setIsFinished(false);
+                                break;
+                            }
+                            b++;
+                        }
+                            
+                    } 
+            }else{
+                for(const item in likedSongs)
+                {
+                    if(Number(item) > track.id && likedSongs[item]>0){
+                        await setTrack(songsData[item-1]);
+                        setLyrics("No Lyrics Found");
+                        await audioRef.current.play();
+                        setPlayStatus(true);
+                        setIsFinished(false);
+                        break;
+                    }
+                        
+                } 
+            }           
+        }else if(isHome){
+            if(isShuffle){
+                const randomIndex = Math.floor(Math.random() * shuffledSongsData.length);
+                await setTrack(shuffledSongsData[randomIndex]);
                 setLyrics("No Lyrics Found");
                 await audioRef.current.play();
                 setPlayStatus(true);
                 setIsFinished(false);
+                handleNextSong(randomIndex);
+            }else{
+                shuffledSongsData.map(async (item,index)=>{
+                    if(track._id === item._id && index < shuffledSongsData.length-1){
+                        await setTrack(shuffledSongsData[index+1]);
+                        setLyrics("No Lyrics Found");
+                        await audioRef.current.play();
+                        setPlayStatus(true);
+                        setIsFinished(false);
+                        handleNextSong(index+1);
+                    }
+                })
             }
-        })
-    }
-
-    const next2 = async () => {
-        shuffledSongsData.map(async (item,index)=>{
-            if(track._id === item._id && index < shuffledSongsData.length-1){
-                await setTrack(shuffledSongsData[index+1]);
+        }else if(isArtist){
+            if(isShuffle){
+                const randomIndex = Math.floor(Math.random() * artistSongs.length);
+                await setTrack(artistSongs[randomIndex]);
                 setLyrics("No Lyrics Found");
                 await audioRef.current.play();
                 setPlayStatus(true);
                 setIsFinished(false);
-                handleNextSong(index+1);
+                handleNextSong(randomIndex);
+            }else{
+                artistSongs.map(async (item,index)=>{
+                    if(track._id === item._id && index < artistSongs.length-1){
+                        await setTrack(artistSongs[index+1]);
+                        setLyrics("No Lyrics Found");
+                        await audioRef.current.play();
+                        setPlayStatus(true);
+                        setIsFinished(false);
+                        handleNextSong(index+1);
+                    }
+                })
             }
-        })
+        }
+        else{
+            if(isShuffle){
+                const randomIndex = Math.floor(Math.random() * albumSongs.length);
+                await setTrack(albumSongs[randomIndex]);
+                setLyrics("No Lyrics Found");
+                await audioRef.current.play();
+                setPlayStatus(true);
+                setIsFinished(false);
+                handleNextSong(randomIndex);
+            }else{
+                albumSongs.map(async (item,index)=>{        
+                    if(track._id === item._id && index < albumSongs.length-1){
+                        await setTrack(albumSongs[index+1]);
+                        setLyrics("No Lyrics Found");
+                        await audioRef.current.play();
+                        setPlayStatus(true);
+                        setIsFinished(false);
+                    }
+                })
+            }
+        }
     }
 
     const formatTime = (minutes, seconds) => {
@@ -276,7 +386,13 @@ const PlayerContextProvider = (props) => {
     const formatNumberWithCommas = (number) => {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
-
+//---------------------------------------------------------------
+    useEffect(()=>{
+        if(artist){
+            const filteredSongs = songsData.filter((song) => song.artist === artist.name);
+            setArtistSongs(filteredSongs);
+        }
+    },[artist])
 
     useEffect(()=>{
         let totalAmount = 0;
@@ -382,6 +498,21 @@ const PlayerContextProvider = (props) => {
     },[])
 
     useEffect(()=>{
+        if(localStorage.getItem('auth-token')){
+            fetch(`${url}/api/user/name`,{
+                method:'POST',
+                headers:{
+                    Accept:'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json',
+                },
+                body:"",
+            }).then((response)=>response.json())
+            .then((data)=>setUserData(data));
+        }
+    },[])
+
+    useEffect(()=>{
         setAlbumSongs([]);
         songsData.map((item)=>{   
           if(item.album === albumData.name){
@@ -419,6 +550,7 @@ const PlayerContextProvider = (props) => {
 
     useEffect(()=>{
         setIsHome(location.pathname === "/");
+        setIsLikedSongs(location.pathname === "/likedsongs");
     },[location.pathname])
 
     useEffect(()=>{
@@ -437,8 +569,8 @@ const PlayerContextProvider = (props) => {
         time,setTime,
         play,pause,
         playWithId,
-        previous,next,next2,
-        seekSong,previous2,
+        previous,next,
+        seekSong,
         songsData,albumsData,
         isfinished,
         setWhoPlays,whoPlays,
@@ -450,7 +582,8 @@ const PlayerContextProvider = (props) => {
         songRefs,artist,setArtist,formatNumberWithCommas,
         addToLikedSongs,removeToLikedSongs,likedSongs,totalSongs,setTotalSongs,
         totalSongsTime,totalSongsAlbum,totalSongsAlbumTime,
-        removeToLikedArtists,addToLikedArtists,likedArtists,albumId,totalArtists
+        removeToLikedArtists,addToLikedArtists,likedArtists,albumId,totalArtists,
+        userData,isShuffle,setIsShuffle,isArtist
     }
 
     return (

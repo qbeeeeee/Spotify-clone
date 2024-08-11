@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Player = () => {
 
-    const {artistsData,removeToLikedSongs,likedSongs,addToLikedSongs,formatTime,isHome,previous2,next2,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
+    const {isShuffle,setIsShuffle,artistsData,removeToLikedSongs,likedSongs,addToLikedSongs,formatTime,isHome,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
     const [isHovered,setIsHovered] = useState(false);
     const [isHovered2,setIsHovered2] = useState(false);
     const [progress,setProgress] = useState(50);
@@ -40,6 +40,14 @@ const Player = () => {
         }
     }
 
+    const handleShuffle = () => {
+        if(isShuffle){
+            setIsShuffle(false);
+        }else{
+            setIsShuffle(true);
+        }
+    }
+
     const handleWhoPlays = () => {
         if(whoPlays){
             setWhoPlays(false);
@@ -61,11 +69,7 @@ const Player = () => {
             play();
         }
         else if(isfinished){
-            if(isHome){
-                next2();
-            }else{
-                next();
-            }
+            next();
         }
     }, [isfinished]);
        
@@ -74,8 +78,8 @@ const Player = () => {
         <div className='hidden lg:flex items-center gap-4 overflow-hidden max-w-[350px] min-w-[350px]'>
             <img className='w-12' src={track.image} alt="" />
             <div>
-                <p onClick={()=>navigate(`/album/${foundAlbum._id}`)} className='hover:underline hover:underline-offest-1 cursor-pointer'>{track.name.toUpperCase()}</p>
-                <p onClick={()=>navigate(`/artist/${artistsData.find((x)=>x.name === track.artist)._id}`)} className='hover:underline hover:underline-offest-1 cursor-pointer opacity-60 hover:opacity-100'>{track.artist}</p>
+                <p onClick={()=>{navigate(`/album/${foundAlbum._id}`);setIsLyrics(false);}} className='hover:underline hover:underline-offest-1 cursor-pointer'>{track.name.toUpperCase()}</p>
+                <p onClick={()=>{navigate(`/artist/${artistsData.find((x)=>x.name === track.artist)._id}`);setIsLyrics(false);}} className='hover:underline hover:underline-offest-1 cursor-pointer opacity-60 hover:opacity-100'>{track.artist}</p>
             </div>
             {likedSongs[track.id] === 1
             ?<img onClick={()=>{removeToLikedSongs(track.id)}} className='w-4 h-4 brightness-125 hover:brightness-150 cursor-pointer' src={assets.added_icon} alt="" />
@@ -88,13 +92,13 @@ const Player = () => {
                     <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
                         Shuffle
                     </div>
-                    <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.shuffle_icon} alt="" />
+                    <img onClick={handleShuffle} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={isShuffle?assets.shuffle2_icon:assets.shuffle_icon} alt="" />
                 </div>
                 <div className="relative group">
                     <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
                         Previous
                     </div>
-                    <img onClick={isHome?previous2:previous} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.prev_icon} alt="" />
+                    <img onClick={previous} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.prev_icon} alt="" />
                 </div>
                 {playStatus
                 ? <div className="relative group">
@@ -114,7 +118,7 @@ const Player = () => {
                     <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
                         Next
                     </div>
-                    <img onClick={isHome?next2:next} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.next_icon} alt="" />
+                    <img onClick={next} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.next_icon} alt="" />
                 </div>
                 <div className="relative group">
                     <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">

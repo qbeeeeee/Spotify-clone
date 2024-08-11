@@ -77,7 +77,7 @@ const WhoPlays = () => {
                         {track.name}
                     </div>
                 </div>
-                <div onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='opacity-70 hover:opacity-100 hover:underline cursor-pointer'> 
+                <div onClick={()=>{navigate(`/artist/${artistsData.find((x)=>x.name===track.artist)._id}`);setIsLyrics(false);}} className='opacity-70 hover:opacity-100 hover:underline cursor-pointer'> 
                     {track.artist}
                 </div>
             </div>
@@ -86,7 +86,7 @@ const WhoPlays = () => {
                     <img className='w-[400px] h-[260px] object-cover rounded-t-xl' src={artist?artist.image:"Fetching Data"} alt="" />
                 </div>
                 <div className='relative bg-[#202020] h-[160px] mx-5 rounded-b-2xl cursor-pointer'>
-                    <p onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='pt-4 pl-5 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
+                    <p onClick={()=>{navigate(`/artist/${artistsData.find((x)=>x.name===track.artist)._id}`);setIsLyrics(false);}} className='pt-4 pl-5 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
                     {artist?likedArtists[artist.id] === 1
                     ?<button onClick={()=>{removeToLikedArtists(artist.id)}} className="absolute right-4 top-10 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
                         Unfollow
@@ -100,7 +100,7 @@ const WhoPlays = () => {
                 </div>
                 <div className='pl-5 relative bg-[#202020] mt-4 h-[250px] mx-5 rounded-2xl cursor-pointer'>
                     <p className='pt-4 font-bold text-white'>Credits</p>
-                    <p onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='pt-2 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
+                    <p onClick={()=>{navigate(`/artist/${artistsData.find((x)=>x.name===track.artist)._id}`);setIsLyrics(false);}} className='pt-2 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
                     <p className='text-white text-sm opacity-70'>Main Artist</p>
                     {artist?likedArtists[artist.id] === 1
                     ?<button onClick={()=>{removeToLikedArtists(artist.id)}} className="absolute right-4 top-10 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">
@@ -110,7 +110,7 @@ const WhoPlays = () => {
                         Follow
                     </button>
                     :null}
-                    <p onClick={()=>{navigate(`/artist/${track.artist}`);setIsLyrics(false);}} className='pt-4 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
+                    <p onClick={()=>{navigate(`/artist/${artistsData.find((x)=>x.name===track.artist)._id}`);setIsLyrics(false);}} className='pt-4 font-bold text-white hover:underline'>{artist?artist.name:"Fetching Data"}</p>
                     <p className='text-white text-sm opacity-70'>Composer,Lyricist</p>
                     {artist?likedArtists[artist.id] === 1
                     ?<button onClick={()=>{removeToLikedArtists(artist.id)}} className="absolute right-4 top-28 bg-transparent border border-white px-4 py-1.5 hover:scale-105 text-sm rounded-full opacity-70 hover:opacity-100">

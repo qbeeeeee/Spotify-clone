@@ -36,6 +36,7 @@ import added_icon from './added_icon.png'
 import likedsongs_icon from './likedsongs_icon.png'
 import like2_icon from './like2_icon.png'
 import following_icon from './following_icon.png'
+import shuffle2_icon from './shuffle2_icon.png'
  
 export const assets = {
     bell_icon,
@@ -70,5 +71,5 @@ export const assets = {
     menu_icon,cross_icon,
     plays2_icon,mic2_icon,
     add_icon,added_icon,likedsongs_icon,
-    like2_icon,following_icon
+    like2_icon,following_icon,shuffle2_icon
 }

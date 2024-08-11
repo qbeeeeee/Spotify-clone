@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Artist = () => {
 
-  const {albumsData,likedArtists,removeToLikedArtists,addToLikedArtists,foundAlbum,songsData,track,formatTime,playWithId,playStatus,pause,play,artistsData,artist,setArtist,formatNumberWithCommas} = useContext(PlayerContext);
+  const {isArtist,albumsData,likedArtists,removeToLikedArtists,addToLikedArtists,foundAlbum,songsData,track,formatTime,playWithId,playStatus,pause,play,artistsData,artist,setArtist,formatNumberWithCommas} = useContext(PlayerContext);
 
   const navigate = useNavigate();
 
@@ -16,24 +16,27 @@ const Artist = () => {
   const [albums,setAlbums] = useState([]);
   const [isHovered,setIsHovered] = useState(false);
   const artistRef = useRef();
-  const isArtist = location.pathname.includes("artist");
   const artistId = isArtist ? location.pathname.split('/').pop() : "";
 
   useEffect(() => {
     const fetchArtistData = async () => {
       try {
-        const artistResponse = await axios.get(
-          `https://musicbrainz.org/ws/2/artist/?query=artist:${track.artist}&fmt=json`
-        );
-        const artistData = artistResponse.data.artists[0];
-
-        // Fetch albums using the artist's ID
-        const albumsResponse = await axios.get(
-          `https://musicbrainz.org/ws/2/release-group?artist=${artistData.id}&type=album&fmt=json`
-        );
-        setAlbums(albumsResponse.data['release-groups']);
-        
-        setLoading(false);
+        if(track){
+          const artistResponse = await axios.get(
+            `https://musicbrainz.org/ws/2/artist/?query=artist:${track.artist}&fmt=json`
+          );
+          const artistData = artistResponse.data.artists[0];
+  
+          if(artistData.id){
+            // Fetch albums using the artist's ID
+            const albumsResponse = await axios.get(
+              `https://musicbrainz.org/ws/2/release-group?artist=${artistData.id}&type=album&fmt=json`
+            );
+            setAlbums(albumsResponse.data['release-groups']);
+            
+            setLoading(false);
+          }
+        }
       } catch (err) {
         setError(err);
         setLoading(false);
@@ -42,7 +45,7 @@ const Artist = () => {
 
     setArtist(artistsData.find(x => x._id === artistId));
     fetchArtistData();
-  }, []);
+  }, [artistsData]);
   
   useEffect(()=>{
     if(artistRef.current && artist){
@@ -53,18 +56,16 @@ const Artist = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
-  return isArtist ?
+  return isArtist && artist ?
   (
     <>
     <Navbar></Navbar>
     <div  ref={artistRef} className="my-5 rounded-2xl min-h-[100%] bg-zinc-900 text-white">
-      {/* Header */}
       <div className="rounded-t-2xl bg-zinc-800 py-4">
         <div className="container py-3 mx-auto px-4">
         </div>
       </div>
 
-      {/* Artist Information */}
       <div className="container mx-auto px-4 py-6 shadow-xl rounded-2xl">
         <div className="flex flex-col md:flex-row items-center">
           <img src={artist?artist.image:null} alt="Artist" className="rounded-full w-48 h-48 md:w-64 md:h-64 shadow-lg hover:scale-105 transition-transform duration-200 ease-in-out"/>
@@ -85,7 +86,6 @@ const Artist = () => {
         </div>
       </div>
 
-      {/* Songs List */}
       <div className="container mx-auto px-4 py-6">
         <h3 className="text-2xl font-semibold mb-4">Popular Songs</h3>
         <ul className="divide-y divide-gray-700 flex flex-col">

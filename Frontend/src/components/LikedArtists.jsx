@@ -8,19 +8,17 @@ const LikedArtists = () => {
 
     const {artistsData,totalArtists,likedArtists} = useContext(PlayerContext);
 
-  return artistsData ? 
+  return artistsData && likedArtists ? 
   (
     <>
     <Navbar/>
     <div className="pt-6 rounded-3xl pl-10 pb-10 m-10" style={{ background: `linear-gradient(135deg, #343434, #151515)` }}>
         <div className='mt-10 flex gap-8 flex-col md:flex-row md:items-end justify-center mb-20'>
             <div className='flex flex-col items-center'>
-                <p className='font-bold text-xl'> <img className='inline-block w-10' src={assets.spotify_logo} alt="" /> Following Artists </p>
-                <h2 className='text-5xl font-bold mb-4 md:text-7xl' >{}</h2>
-                <h4>{}</h4>
-                <p className='flex gap-2'>
-                    <b>Spotify</b>
-                    <b>• {totalArtists} Artists</b>
+                <p className='font-bold text-7xl'> <img className='inline-block w-40' src={assets.following_icon} alt="" /> Following Artists </p>
+                <p className='flex gap-2 mt-10'>
+                    <b> <img className='inline-block mr-5 w-8' src={assets.spotify_logo} alt="" />Spotify</b>
+                    <b className='text-lg'>• {totalArtists} Artists</b>
                 </p>
             </div>
         </div>
@@ -34,7 +32,7 @@ const LikedArtists = () => {
         <div className='pt-2 pr-16'>
             {Object.entries(likedArtists).map(([id, value]) => (
                 likedArtists[id] > 0 && (
-                    <Link key={id} to={`/artist/${artistsData[id-1]._id}`} style={{background: `linear-gradient(${artistsData[id-1].bgColour},#171717)`}} className="sm:grid hidden grid-cols-[1fr_1.25fr_1.25fr_1.5fr_1fr] gap-4 p-4 items-center cursor-pointer rounded-xl hover:brightness-125">
+                    <Link key={id} to={artistsData?`/artist/${artistsData[id-1]._id}`:null} style={{background: `linear-gradient(${artistsData[id-1].bgColour},#171717)`}} className="sm:grid hidden grid-cols-[1fr_1.25fr_1.25fr_1.5fr_1fr] gap-4 p-4 items-center cursor-pointer rounded-xl hover:brightness-125">
                         <div className="flex justify-center">
                             <img className="w-20 h-20 rounded-full shadow-md" src={artistsData[id - 1] ? artistsData[id - 1].image : null} alt=""/>
                         </div>

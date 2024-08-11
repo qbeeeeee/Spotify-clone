@@ -94,6 +94,11 @@ app.post('/api/likedalbums/getlikedalbums', fetchUser, async (req,res)=>{
     res.json(userData.likedAlbums);
 })
 
+app.post('/api/user/name', fetchUser, async (req,res)=>{
+    let userData = await userModel.findOne({_id:req.user.id});
+    res.json({name:userData.name,email:userData.email});
+})
+
 app.get('/',(req,res)=> res.send("API Working"))
 
 app.listen(port, ()=>console.log(`Server started on ${port}`))
