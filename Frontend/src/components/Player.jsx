@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Player = () => {
 
-    const {isShuffle,setIsShuffle,artistsData,removeToLikedSongs,likedSongs,addToLikedSongs,formatTime,isHome,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
+    const {isQueue,setIsQueue,isShuffle,setIsShuffle,artistsData,removeToLikedSongs,likedSongs,addToLikedSongs,formatTime,isHome,seekSong,previous,next,track,seekBar,seekBg,playStatus,play,pause,time,audioRef,isfinished,setWhoPlays,whoPlays,albumsData,isLyrics,setIsLyrics} = useContext(PlayerContext);
     const [isHovered,setIsHovered] = useState(false);
     const [isHovered2,setIsHovered2] = useState(false);
     const [progress,setProgress] = useState(50);
@@ -40,6 +40,15 @@ const Player = () => {
         }
     }
 
+    const handleQueue = () => {
+        if(isQueue){
+            setIsQueue(false);
+        }else{
+            setWhoPlays(false);
+            setIsQueue(true);
+        }
+    }
+
     const handleShuffle = () => {
         if(isShuffle){
             setIsShuffle(false);
@@ -52,6 +61,7 @@ const Player = () => {
         if(whoPlays){
             setWhoPlays(false);
         }else{
+            setIsQueue(false);
             setWhoPlays(true);
         }
     }
@@ -152,7 +162,7 @@ const Player = () => {
                 <div className="absolute bottom-3 transform -translate-x-1/3 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">
                     Queue
                 </div>
-                <img className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={assets.queue_icon} alt="" />
+                <img onClick={handleQueue} className='w-4 transition ease-in-out hover:scale-125 opacity-80 hover:opacity-100 cursor-pointer' src={isQueue?assets.queue2_icon:assets.queue_icon} alt="" />
             </div> 
             <div className="relative group">
                 <div className="absolute bottom-3 transform -translate-x-1/2 -translate-y-5 w-max bg-neutral-700 text-white font-bold text-sm rounded-lg shadow-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity ease-in duration-100">

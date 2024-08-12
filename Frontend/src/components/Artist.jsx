@@ -45,13 +45,13 @@ const Artist = () => {
 
     setArtist(artistsData.find(x => x._id === artistId));
     fetchArtistData();
-  }, [artistsData]);
+  }, [artistsData,artistId]);
   
   useEffect(()=>{
     if(artistRef.current && artist){
-      artistRef.current.style.background = `linear-gradient(${artist.bgColour},#121212)`;  
+      artistRef.current.style.background = `linear-gradient(${artistsData.find((x)=>x._id === artistId).bgColour},#121212)`;  
     }
-  },[albums,artist])
+  },[albums,artistId])
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -68,7 +68,7 @@ const Artist = () => {
 
       <div className="container mx-auto px-4 py-6 shadow-xl rounded-2xl">
         <div className="flex flex-col md:flex-row items-center">
-          <img src={artist?artist.image:null} alt="Artist" className="rounded-full w-48 h-48 md:w-64 md:h-64 shadow-lg hover:scale-105 transition-transform duration-200 ease-in-out"/>
+          <img src={artist?artistsData.find((x)=>x._id === artistId).image:null} alt="Artist" className="rounded-full w-48 h-48 md:w-64 md:h-64 shadow-lg hover:scale-105 transition-transform duration-200 ease-in-out"/>
           <div className="relative mt-4 md:mt-0 md:ml-6 text-center md:text-left">
             <h2 className="text-4xl font-semibold cursor-pointer">{artist?artist.name:null}</h2>
             {artist?likedArtists[artist.id] === 1
@@ -79,9 +79,9 @@ const Artist = () => {
                 Follow
               </button>
               :null}
-            <p className="text-gray-200 mt-3 cursor-pointer">Genre: {artist?artist.genre:null}</p>
-            <p className="text-gray-200 mt-8 cursor-pointer">{artist?artist.desc:null}</p>
-            <p className="mt-2 font-bold text-white opacity-80 cursor-pointer">{artist?formatNumberWithCommas(artist.listeners):null} monthly listeners</p>
+            <p className="text-gray-200 mt-3 cursor-pointer">Genre: {artist?artistsData.find((x)=>x._id === artistId).genre:null}</p>
+            <p className="text-gray-200 mt-8 cursor-pointer">{artist?artistsData.find((x)=>x._id === artistId).desc:null}</p>
+            <p className="mt-2 font-bold text-white opacity-80 cursor-pointer">{artist?formatNumberWithCommas(artistsData.find((x)=>x._id === artistId).listeners):null} monthly listeners</p>
           </div>
         </div>
       </div>
@@ -90,7 +90,7 @@ const Artist = () => {
         <h3 className="text-2xl font-semibold mb-4">Popular Songs</h3>
         <ul className="divide-y divide-gray-700 flex flex-col">
           {artist?
-          songsData.filter((x)=>x.artist === artist.name).map((item, index) => (
+          songsData.filter((x)=>x.artist === artistsData.find((x)=>x._id === artistId).name).map((item, index) => (
             <li onClick={()=>{playWithId(item._id)}} key={index} className="cursor-pointer grid grid-cols-[2fr_1fr_0.5fr] items-center py-2 hover:bg-zinc-800 rounded-md px-2">
               <div className={item.name === track.name?"text-green-400 flex items-center ":'text-white flex items-center'}>
                 <b onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} className='mr-5 text-[#a7a7a7]'>{item.name === track.name ? <img onClick={(e)=>{e.stopPropagation();playStatus ? pause() : play();}} src={playStatus?assets.pause2_icon:assets.play2_icon} className={isHovered?'w-6 h-6 inline':'w-5 h-5 inline'} alt="" /> : index+1}</b>
