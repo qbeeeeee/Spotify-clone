@@ -5,20 +5,22 @@ import Header from './components/Header'
 import Display from './components/Display'
 import { PlayerContext } from './context/PlayerContext'
 import WhoPlays from './components/WhoPlays'
+import Queue from './components/Queue'
 
 const App = () => {
 
-  const {audioRef,track,songsData,whoPlays} = useContext(PlayerContext);
+  const {isQueue,audioRef,track,songsData,whoPlays} = useContext(PlayerContext);
 
   return (
     <div className='h-screen bg-black'>
       {
         songsData.length !== 0
         ? <>
-          <div className={`${whoPlays ? 'w-[100%] h-[90%]' : 'h-[90%] w-[100%]'} flex`}>
+          <div className={`${whoPlays || isQueue ? 'w-[100%] h-[90%]' : 'h-[90%] w-[100%]'} flex`}>
             <Sidebar/>
             <Display/>
             {whoPlays?<WhoPlays/>:<></>}
+            {isQueue?<Queue/>:<></>}
           </div>
           <Player/>
           </>

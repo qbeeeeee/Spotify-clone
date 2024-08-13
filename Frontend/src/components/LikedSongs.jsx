@@ -30,7 +30,7 @@ const LikedSongs = () => {
                 <p className='flex gap-2 mt-10'>
                 <b> <img className='inline-block mr-5 w-8' src={assets.spotify_logo} alt="" />Spotify</b>
                     <b>• {totalSongs} songs,</b>
-                    about {totalSongsTime} mins
+                    about {totalSongsTime}
                 </p>
             </div>
         </div>

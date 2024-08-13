@@ -23,6 +23,8 @@ const PlayerContextProvider = (props) => {
     const [isHome,setIsHome] = useState(location.pathname === "/");
     const [isLikedSongs,setIsLikedSongs] = useState(location.pathname === "/likedsongs");
     const isArtist = location.pathname.includes("artist");
+    const [isQueue,setIsQueue] = useState(false);
+    const [queue, setQueue] = useState([]);
     const [artistSongs,setArtistSongs] = useState([]);
     const [isShuffle,setIsShuffle] = useState(false);
     const [userData,setUserData] = useState([]);
@@ -151,10 +153,15 @@ const PlayerContextProvider = (props) => {
     }
 
     const playWithId = async (id) => {
+        const isSongInQueue = queue.some((queuedSong) => queuedSong._id === id);
+        
         await songsData.map((item)=>{
             if(id === item._id){
                 setTrack(item);
                 setLyrics("No Lyrics Found");
+                if(isSongInQueue){
+                    removeFromQueue(item);
+                }
             }
         })
         
@@ -162,6 +169,24 @@ const PlayerContextProvider = (props) => {
         setPlayStatus(true);
         setIsFinished(false);
     }
+    
+    const addToQueue = (song) => {
+        const isSongInQueue = queue.some((queuedSong) => queuedSong.id === song.id);
+
+        if (!isSongInQueue) {
+          setQueue([...queue, song]);
+        }
+    };
+
+    const removeFromQueue = (song) => {
+        const isSongInQueue = queue.some((queuedSong) => queuedSong.id === song.id);
+      
+        if (isSongInQueue) {
+          const updatedQueue = queue.filter((queuedSong) => queuedSong.id !== song.id);
+          setQueue(updatedQueue);
+        }
+    };
+
 
     const previous = async () => { 
         if(isLikedSongs){ 
@@ -219,102 +244,111 @@ const PlayerContextProvider = (props) => {
         audioRef.current.currentTime = ((e.nativeEvent.offsetX / seekBg.current.offsetWidth)*audioRef.current.duration);
     }
    
-    const next = async () => {   
-        if(isLikedSongs){
-            if(isShuffle){
-                const randomIndex = Math.floor(Math.random() * totalSongs);
-                let b = 0;
-                for(const item in likedSongs)
-                    {
-                        if(likedSongs[item]>0){
-                            if(b===randomIndex){
-                                await setTrack(songsData[item-1]);
-                                setLyrics("No Lyrics Found");
-                                await audioRef.current.play();
-                                setPlayStatus(true);
-                                setIsFinished(false);
-                                break;
+    const next = async () => {
+        if(queue.length>0){
+            await setTrack(queue[0]);
+            setLyrics("No Lyrics Found");
+            await audioRef.current.play();
+            setPlayStatus(true);
+            setIsFinished(false);
+            removeFromQueue(queue[0]);
+        }else{  
+            if(isLikedSongs){
+                if(isShuffle){
+                    const randomIndex = Math.floor(Math.random() * totalSongs);
+                    let b = 0;
+                    for(const item in likedSongs)
+                        {
+                            if(likedSongs[item]>0){
+                                if(b===randomIndex){
+                                    await setTrack(songsData[item-1]);
+                                    setLyrics("No Lyrics Found");
+                                    await audioRef.current.play();
+                                    setPlayStatus(true);
+                                    setIsFinished(false);
+                                    break;
+                                }
+                                b++;
                             }
-                            b++;
+                                
+                        } 
+                }else{
+                    for(const item in likedSongs)
+                    {
+                        if(Number(item) > track.id && likedSongs[item]>0){
+                            await setTrack(songsData[item-1]);
+                            setLyrics("No Lyrics Found");
+                            await audioRef.current.play();
+                            setPlayStatus(true);
+                            setIsFinished(false);
+                            break;
                         }
                             
                     } 
-            }else{
-                for(const item in likedSongs)
-                {
-                    if(Number(item) > track.id && likedSongs[item]>0){
-                        await setTrack(songsData[item-1]);
-                        setLyrics("No Lyrics Found");
-                        await audioRef.current.play();
-                        setPlayStatus(true);
-                        setIsFinished(false);
-                        break;
-                    }
-                        
-                } 
-            }           
-        }else if(isHome){
-            if(isShuffle){
-                const randomIndex = Math.floor(Math.random() * shuffledSongsData.length);
-                await setTrack(shuffledSongsData[randomIndex]);
-                setLyrics("No Lyrics Found");
-                await audioRef.current.play();
-                setPlayStatus(true);
-                setIsFinished(false);
-                handleNextSong(randomIndex);
-            }else{
-                shuffledSongsData.map(async (item,index)=>{
-                    if(track._id === item._id && index < shuffledSongsData.length-1){
-                        await setTrack(shuffledSongsData[index+1]);
-                        setLyrics("No Lyrics Found");
-                        await audioRef.current.play();
-                        setPlayStatus(true);
-                        setIsFinished(false);
-                        handleNextSong(index+1);
-                    }
-                })
+                }           
+            }else if(isHome){
+                if(isShuffle){
+                    const randomIndex = Math.floor(Math.random() * shuffledSongsData.length);
+                    await setTrack(shuffledSongsData[randomIndex]);
+                    setLyrics("No Lyrics Found");
+                    await audioRef.current.play();
+                    setPlayStatus(true);
+                    setIsFinished(false);
+                    handleNextSong(randomIndex);
+                }else{
+                    shuffledSongsData.map(async (item,index)=>{
+                        if(track._id === item._id && index < shuffledSongsData.length-1){
+                            await setTrack(shuffledSongsData[index+1]);
+                            setLyrics("No Lyrics Found");
+                            await audioRef.current.play();
+                            setPlayStatus(true);
+                            setIsFinished(false);
+                            handleNextSong(index+1);
+                        }
+                    })
+                }
+            }else if(isArtist){
+                if(isShuffle){
+                    const randomIndex = Math.floor(Math.random() * artistSongs.length);
+                    await setTrack(artistSongs[randomIndex]);
+                    setLyrics("No Lyrics Found");
+                    await audioRef.current.play();
+                    setPlayStatus(true);
+                    setIsFinished(false);
+                    handleNextSong(randomIndex);
+                }else{
+                    artistSongs.map(async (item,index)=>{
+                        if(track._id === item._id && index < artistSongs.length-1){
+                            await setTrack(artistSongs[index+1]);
+                            setLyrics("No Lyrics Found");
+                            await audioRef.current.play();
+                            setPlayStatus(true);
+                            setIsFinished(false);
+                            handleNextSong(index+1);
+                        }
+                    })
+                }
             }
-        }else if(isArtist){
-            if(isShuffle){
-                const randomIndex = Math.floor(Math.random() * artistSongs.length);
-                await setTrack(artistSongs[randomIndex]);
-                setLyrics("No Lyrics Found");
-                await audioRef.current.play();
-                setPlayStatus(true);
-                setIsFinished(false);
-                handleNextSong(randomIndex);
-            }else{
-                artistSongs.map(async (item,index)=>{
-                    if(track._id === item._id && index < artistSongs.length-1){
-                        await setTrack(artistSongs[index+1]);
-                        setLyrics("No Lyrics Found");
-                        await audioRef.current.play();
-                        setPlayStatus(true);
-                        setIsFinished(false);
-                        handleNextSong(index+1);
-                    }
-                })
-            }
-        }
-        else{
-            if(isShuffle){
-                const randomIndex = Math.floor(Math.random() * albumSongs.length);
-                await setTrack(albumSongs[randomIndex]);
-                setLyrics("No Lyrics Found");
-                await audioRef.current.play();
-                setPlayStatus(true);
-                setIsFinished(false);
-                handleNextSong(randomIndex);
-            }else{
-                albumSongs.map(async (item,index)=>{        
-                    if(track._id === item._id && index < albumSongs.length-1){
-                        await setTrack(albumSongs[index+1]);
-                        setLyrics("No Lyrics Found");
-                        await audioRef.current.play();
-                        setPlayStatus(true);
-                        setIsFinished(false);
-                    }
-                })
+            else{
+                if(isShuffle){
+                    const randomIndex = Math.floor(Math.random() * albumSongs.length);
+                    await setTrack(albumSongs[randomIndex]);
+                    setLyrics("No Lyrics Found");
+                    await audioRef.current.play();
+                    setPlayStatus(true);
+                    setIsFinished(false);
+                    handleNextSong(randomIndex);
+                }else{
+                    albumSongs.map(async (item,index)=>{        
+                        if(track._id === item._id && index < albumSongs.length-1){
+                            await setTrack(albumSongs[index+1]);
+                            setLyrics("No Lyrics Found");
+                            await audioRef.current.play();
+                            setPlayStatus(true);
+                            setIsFinished(false);
+                        }
+                    })
+                }
             }
         }
     }
@@ -449,7 +483,10 @@ const PlayerContextProvider = (props) => {
         }
         const totalMinutes = Math.floor(totalAmountOfTime / 60);
         const totalSeconds = totalAmountOfTime % 60;
-        const formattedTotalTime = `${totalMinutes}:${totalSeconds.toString().padStart(2, '0')}`;
+
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        const formattedTotalTime = `${hours}hours : ${minutes.toString().padStart(2, '0')}mins : ${totalSeconds.toString().padStart(2, '0')}seconds`;
 
         setTotalSongsTime(formattedTotalTime);
 
@@ -583,7 +620,8 @@ const PlayerContextProvider = (props) => {
         addToLikedSongs,removeToLikedSongs,likedSongs,totalSongs,setTotalSongs,
         totalSongsTime,totalSongsAlbum,totalSongsAlbumTime,
         removeToLikedArtists,addToLikedArtists,likedArtists,albumId,totalArtists,
-        userData,isShuffle,setIsShuffle,isArtist
+        userData,isShuffle,setIsShuffle,isArtist,isQueue,setIsQueue,addToQueue,queue,
+        removeFromQueue
     }
 
     return (
